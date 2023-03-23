@@ -28,15 +28,12 @@ $statement-> execute();
 </head>
 <body>
     <h1>Winnipeg Performers</h1>
-    <a href="./newprofile.php" class="nav">New Performer Profile</a>
-    <a href="./newact.php" class="nav">Add Act Information</a>
+    <a href="./newprofile.php" class="nav">New Performer Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
     <?php while ($row = $statement->fetch()): ?>
         <ul class = "profile">
-            <li><a href="./edit.php?performer_id=<?= $row['performer_id'] ?>" class="edit">Edit Profile</a></li>      
-            <li><?= $row['stage_name'] ?></li>
-            <li><?= $row['website'] ?></li>
-            <li><?= $row['contact_phone'] ?></li>
-            <li><?= $row['contact_email'] ?></li>
+            <li><h3><?= $row['stage_name'] ?></h3></li>
+            <li><a href="./profile.php?performer_id=<?= $row['performer_id'] ?>">View Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $row['performer_id'] ?>" class="edit">Edit Profile</a></li>
+            <li><a href="<?= $row['website'] ?>"><?= $row['website'] ?></a></li>
         </ul>
     <?php endwhile ?>
 </body>

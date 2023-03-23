@@ -4,7 +4,7 @@
     
     Name: Brianne Coleman
     Date: March 21, 2023
-    Description: WebDev 2 - Assignment 3 (Blog)
+    Description: WebDev 2 Final Project: Edit/Delete performer profile
 
 ****************/
 
@@ -15,7 +15,7 @@ require('authenticate.php');
 
 $performer_id = "";
 $error_flag = false;
-$error_message = "Title and/or post content cannot be empty.";
+$error_message = "Contact details cannot be empty.";
 
 // Checks if the post id has been set, retrieves it from the url
 
@@ -33,8 +33,6 @@ else
 
 if(isset($_POST['delete']))
 {
-    // Deletes the query matching the selected post_id from the database
-
     $query = "DELETE FROM Performers WHERE performer_id = $performer_id";
 
     $statement = $db->prepare($query);
@@ -47,16 +45,21 @@ else
 {
     // Assumes that if "delete" was not selected, the "post" button was.  Checks and sanitizes all posted inputs.
 
-    if($_POST && isset($_POST['stage_name']) && isset($_POST['contact_phone']) && isset($_POST['contact_email']) && isset($_POST['website']))
+    if($_POST && isset($_POST['stage_name']) && isset($_POST['contact_phone']) && isset($_POST['contact_email']) && isset($_POST['website']) && isset($_POST['bio']))
     {
         $stage_name = filter_input(INPUT_POST, 'stage_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $contact_phone = filter_input(INPUT_POST, 'contact_phone', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $contact_email = filter_input(INPUT_POST, 'contact_email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $website = filter_input(INPUT_POST, 'website', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $bio = filter_input(INPUT_POST, 'bio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        // Verifies that none of the required post inputs were empty
     
         if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0 && strlen($contact_email) > 0)
         {
-            $query = "UPDATE performers SET stage_name = :stage_name, website = :website, contact_phone = :contact_phone, contact_email = :contact_email WHERE performer_id = :performer_id";
+            $query = "UPDATE performers SET stage_name = :stage_name, website = :website, contact_phone = :contact_phone, contact_email = :contact_email, bio = :bio WHERE performer_id = :performer_id";
+
+            // Binds post values to database rows
 
             $statement= $db->prepare($query);
             $statement->bindValue(':performer_id', $performer_id);
@@ -64,6 +67,7 @@ else
             $statement->bindValue(':website', $website);
             $statement->bindValue(':contact_phone', $contact_phone);
             $statement->bindValue(':contact_email', $contact_email);
+            $statement->bindValue(':bio', $bio);
             $statement->execute();
 
             $query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
@@ -73,7 +77,6 @@ else
 
             $post = $statement->fetch();
 
-            
             header('Location: ./index.php');
             exit;
         }
@@ -115,32 +118,35 @@ function filter_performer_id()
 </head>
 <body>
     <h1>Edit Performer Profile</h1>
+    <div class="nav">
+        <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>
+    </div>
+    <br>
     <form method="post">
         <input type="hidden" name="performer_id" value="<?= $profile['performer_id'] ?>">
         <?php if(!$error_flag): ?>
             <label for="stage_name">Stage Name:</label>
-            <input id="stage_name" name="stage_name" value="<?= $profile['stage_name'] ?>">
+            <input id="stage_name" name="stage_name" size="50" value="<?= $profile['stage_name'] ?>">
             <br><br>
             <label for="website">Website:</label>
-            <input id="website" name="website" value="<?= $profile['website'] ?>">
+            <input id="website" name="website" size="50" value="<?= $profile['website'] ?>">
             <br><br>
             <label for="contact_phone">Phone Number:</label>
-            <input id="contact_phone" name="contact_phone" value="<?= $profile['contact_phone'] ?>">
+            <input id="contact_phone" name="contact_phone" size="50" value="<?= $profile['contact_phone'] ?>">
             <br><br>
             <label for="contact_email">Email Address:</label>
-            <input id="contact_email" name="contact_email" value="<?= $profile['contact_email'] ?>">
+            <input id="contact_email" name="contact_email" size="50" value="<?= $profile['contact_email'] ?>">
+            <br><br>
+            <label for="bio">Bio:</label>
+            <textarea id="bio" name="bio" rows="10" cols="50"><?= $profile['bio'] ?></textarea>
             <br><br>
             <input type="submit" name="submit" value="Update Profile">
             <input type="submit" name="delete" value="Delete Profile">
         <?php else: ?>
             <div class = "error">
                 <?= $error_message ?>
-                <?= $stage_name ?>
-                <?= $website ?>
-                <?= $contact_email ?>
-                <?= $contact_phone ?>
-                <br><br><br>
-                <a href="./index.php">Return to Home Page</a>
             </div>
         <?php endif ?>
     </form>

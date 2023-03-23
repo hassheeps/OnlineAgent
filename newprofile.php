@@ -3,8 +3,8 @@
 /*******w******** 
     
     Name: Brianne Coleman
-    Date: January 30, 2023
-    Description: WebDev 2 - Assignment 3 (Blog)
+    Date: March 22, 2023
+    Description: WebDev 2 Final Project: Create new performer profile
 
 ****************/
 

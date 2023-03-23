@@ -1,4 +1,10 @@
+/*******w******** 
+    
+    Name: Brianne Coleman
+    Date: March 22, 2023
+    Description: WebDev 2 -  Final Project CSS
 
+****************/
 
 body {
 	font-family: 'Alegreya', serif;
@@ -14,6 +20,20 @@ ul {
 
 ul li{
 	padding-top: 10px;
+}
+
+.nav{
+	
+
+}
+
+.contact{
+	margin-left: -40px;
+}
+
+.bio{
+	margin-left: -40px;
+	width: 250px;
 }
 
 .profile{
@@ -50,15 +70,11 @@ ul li{
 
 .timestamp {
 	list-style: none;
-	padding-left: 10px;
+	margin-bottom: 15px;
 	font-size: 12px;
-}
+	text-align: center;
 
-p{
-	margin-left: 40px;
-	margin-top: -10px;
 }
-
 
 #title{
 	width: 50%;
@@ -66,6 +82,7 @@ p{
 
 label{
 	display:block;
+	padding-bottom: 5px;
 }
 
 a{
@@ -90,11 +107,19 @@ h1{
 	text-decoration: none;
 	text-align: center;
 	color: darkblue;
+	margin-bottom: 0px;
 }
 
 h2{
 	padding-left: 40px;
 	color: darkblue;
+}
+
+h3{
+	font-size: 22px;
+	font-weight: bold;
+	padding: 0px;
+	margin: 0px;
 }
 
 .error{
