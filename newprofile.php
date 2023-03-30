@@ -9,7 +9,8 @@
 ****************/
 
 require('connect.php');
-require('authenticate.php');
+
+session_start();
 
 $stage_name = "";
 $website = "";
@@ -18,24 +19,22 @@ $contact_email = "";
 
 // Verifies that a post has occurred and a value exists.  The value is then sanitized to be used as a variable.
 
-if($_POST && !empty($_POST['stage_name']))
+if($_POST && !empty($_POST['stage_name']) && !empty($_POST['website']) && !empty($_POST['contact_phone']) && !empty($_POST['contact_email']))
 {
     $stage_name = filter_input(INPUT_POST, 'stage_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['website']))
-{
     $website = filter_input(INPUT_POST, 'website', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['contact_phone']))
-{
     $contact_phone = filter_input(INPUT_POST, 'contact_phone', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['contact_email']))
-{
     $contact_email = filter_input(INPUT_POST, 'contact_email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $username = $_SESSION['username'];
+
+    $query = "SELECT * FROM users WHERE username = :username";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->execute();
+    $user = $statement->fetch();
+
+    $user_id = $user['user_id'];
 }
 
 // Verifies that the length of both the content and the title variables is 1 or greater.
@@ -43,18 +42,17 @@ if($_POST && !empty($_POST['contact_email']))
 if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0 && strlen($contact_email) > 0)
 {
 
-    $query = "INSERT INTO performers (stage_name, website, contact_phone, contact_email) VALUES (:stage_name, :website, :contact_phone, :contact_email)";
+    $query = "INSERT INTO performers (stage_name, website, contact_phone, contact_email, user_id) VALUES (:stage_name, :website, :contact_phone, :contact_email, :user_id)";
 
     $statement= $db->prepare($query);
     $statement->bindValue(':stage_name', $stage_name);
     $statement->bindValue(':website', $website);
     $statement->bindValue(':contact_phone', $contact_phone);
     $statement->bindValue(':contact_email', $contact_email);
+    $statement->bindValue(':user_id', $user_id);
     $statement->execute();
 
-
     // Adds the new post as a record in the database
-
 
     header('Location: ./index.php');
     exit;
@@ -73,7 +71,13 @@ if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0
 </head>
 <body>
     <h1>New Performer Profile</h1>
-    <a href="./index.php" class="nav">Home Page</a>
+    <div class = "username">
+        <?php if(isset($_SESSION['username'])): ?>
+            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href = "./logout.php">Log Out</a>
+        <?php endif ?>
+    </div>
+    <a href="./index.php" class="nav">Home</a>
     <br><br><br>
     <form method="post" action="newprofile.php">
         <label for="stage_name">Stage Name:</label>
@@ -86,6 +90,6 @@ if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0
         <input id="contact_email" name="contact_email">
         <br><br>
         <input type="submit" value="Submit">
-
+    </form>
 </body>
 </html>

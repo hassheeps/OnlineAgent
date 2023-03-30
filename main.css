@@ -42,6 +42,12 @@ ul li{
 	padding-bottom: 15px;
 }
 
+.userlist
+{
+	border-style: solid;
+	border-width: 1px;
+}
+
 .title {
 	list-style: none;
 	font-weight: bold;
@@ -123,7 +129,61 @@ h3{
 }
 
 .error{
-	font-size: 20px;
-	font-weight:bold;
+	color: red;
+	margin-left: 190px;
+}
+
+.username{
+	font-weight: bold;
+	text-align: right;
+}
+
+.logout{
+	text-align:center;
+	align-content: center;
+}
+
+.invalidlogin{
+	color: red;
+}
+
+.table{
+	border-style: solid;
+	border-width: 1px;
+
+}
+
+thead{
+	border-style: solid;
+	border-width: 1px;
+	position: flex;
+}
+
+th {
+	width: 100px;
+	border-width: 1px;
+	border-bottom-style: solid;
+	border-right-style: solid;
+}
+
+#edit{
+	border-style: none;
 	text-align: center;
+}
+
+#edit tr{
+	align-content: center;
+}
+
+#userid{
+	width: 50px;
+	align-content: center;
+	text-align: center;
+
+}
+
+#userid tr{
+	align-content: center;
+	border-style: solid;
+	border-width: 1px;
 }

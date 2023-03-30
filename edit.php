@@ -9,7 +9,8 @@
 ****************/
 
 require('connect.php');
-require('authenticate.php');
+
+session_start();
 
 // Variables
 
@@ -70,13 +71,6 @@ else
             $statement->bindValue(':bio', $bio);
             $statement->execute();
 
-            $query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
-
-            $statement = $db->prepare($query);
-            $statement->execute();
-
-            $post = $statement->fetch();
-
             header('Location: ./index.php');
             exit;
         }
@@ -114,10 +108,17 @@ function filter_performer_id()
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="script.js"></script>
     <title>Edit Performer Profile</title>
 </head>
 <body>
     <h1>Edit Performer Profile</h1>
+    <div class = "username">
+        <?php if(isset($_SESSION['username'])): ?>
+            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href = "./logout.php">Log Out</a>
+        <?php endif ?>
+    </div>
     <div class="nav">
         <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -142,8 +143,8 @@ function filter_performer_id()
             <label for="bio">Bio:</label>
             <textarea id="bio" name="bio" rows="10" cols="50"><?= $profile['bio'] ?></textarea>
             <br><br>
-            <input type="submit" name="submit" value="Update Profile">
-            <input type="submit" name="delete" value="Delete Profile">
+            <input type="submit" name="update" id="update" value="Update Profile" onclick="return confirmUpdate()">
+            <input type="submit" name="delete" id="delete" value="Delete Profile" onclick="return confirmDelete()">
         <?php else: ?>
             <div class = "error">
                 <?= $error_message ?>

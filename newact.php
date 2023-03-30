@@ -9,7 +9,9 @@
 ****************/
 
 require('connect.php');
-require('authenticate.php');
+
+session_start();
+
 
 if(isset($_GET['performer_id']) && filter_performer_id())
 {
@@ -36,23 +38,11 @@ $performer = $statement->fetch();
 
 // Verifies that a post has occurred and a value exists.  The value is then sanitized to be used as a variable.
 
-if($_POST && !empty($_POST['act_name']))
+if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !empty($_POST['category']) && !empty($_POST['apparatus']))
 {
     $act_name = filter_input(INPUT_POST, 'act_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['description']))
-{
     $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['category']))
-{
     $contact_phone = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
-
-if($_POST && !empty($_POST['apparatus']))
-{
     $contact_email = filter_input(INPUT_POST, 'apparatus', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 }
 
@@ -60,7 +50,6 @@ if($_POST && !empty($_POST['apparatus']))
 
 if(strlen($act_name) > 0 && strlen($description) > 0 && strlen($category) > 0 && strlen($apparatus) > 0)
 {
-
     // Get category id number for chosen category
 
     $query = "SELECT * FROM Categories WHERE category_name = $category";
@@ -112,8 +101,16 @@ function filter_performer_id()
 </head>
 <body>
     <h1>New Act</h1>
-    <a href="./index.php" class="nav">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="./profile.php?performer_id=<?= $performer_id ?>">Return to Profile</a>
+    <div class = "username">
+        <?php if(isset($_SESSION['username'])): ?>
+            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href = "./logout.php">Log Out</a>
+        <?php endif ?>
+    </div>
+    <div class = "nav">
+        <a href="./index.php" class="nav">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="./profile.php?performer_id=<?= $performer_id ?>">Return to Profile</a>
+    </div>
     <br><br>
     <h3>Stage Name: <?= $performer['stage_name'] ?></h3>
     <br>

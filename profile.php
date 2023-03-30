@@ -10,6 +10,8 @@
 
 require('connect.php');
 
+session_start();
+
 // Checks if the post id has been set, retrieves it from the url
 
 if(isset($_GET['performer_id']) && filter_post_id())
@@ -22,6 +24,27 @@ else
     exit;
 }
 
+if(isset($_SESSION['username']))
+{
+    $username = $_SESSION['username'];
+
+    // retrieves the record from the users table on the database matching the logged in user.
+
+    $query = "SELECT * FROM users WHERE username = :username";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->execute();
+
+    $user = $statement->fetch();
+
+}
+else
+{
+    $user = "";
+}
+
+
 // Retrieves the record from the database that matches the post id.
 
 $query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
@@ -30,6 +53,9 @@ $statement = $db->prepare($query);
 $statement->execute();
 
 $profile = $statement->fetch();
+
+
+
 
 // The function that validates the post id
 
@@ -54,9 +80,17 @@ function filter_post_id()
     <div class = "timestamp">
         Created: <?= $profile['date_created'] ?>
     </div>
+    <div class = "username">
+        <?php if(isset($_SESSION['username'])): ?>
+            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href = "./logout.php">Log Out</a>
+        <?php endif ?>
+    </div>
     <div class="nav">
         <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>
+        <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
+            <a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>
+        <?php endif ?>
     </div>
     <div class="contact"> 
     <ul> 
