@@ -33,9 +33,9 @@ function confirmUpdate()
 		}
 }
 
-function add_records(records)
+function confirmLogOut()
 {
-	
+	return confirm("Log out?");
 }
 
 function hideErrors()

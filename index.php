@@ -35,6 +35,9 @@ if(isset($_SESSION['username']))
     $user = $userstatement->fetch();
 
     $user_id = $user['user_id'];
+    $user_level_id = $user['user_level_id'];
+
+    // Checks for records of a performer profile matching the logged in user.
 
     $query = "SELECT * FROM Performers WHERE user_id = :user_id";
 
@@ -43,6 +46,8 @@ if(isset($_SESSION['username']))
     $profilestatement->execute();
 
     $profile = $profilestatement->fetch();
+
+    // If no performer profile exists, make the "create performer profile" link visible.
 
     if($profile != null)
     {
@@ -77,10 +82,10 @@ else
             <a href="./login.php" class="nav">Log In</a>&nbsp;&nbsp;|&nbsp;&nbsp;
             <a href="./user_registration.php" class="nav">Register</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <?php endif ?>
-        <?php if(!$profile_exists && isset($_SESSION['username']) && $_SESSION['username'] != "Admin"): ?>
+        <?php if(!$profile_exists && isset($_SESSION['username'])): ?>
             <a href="./newprofile.php" class="nav">Create Performer Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <?php endif ?>
-        <?php if(isset($_SESSION['username']) && $_SESSION['username'] == "Admin"): ?>
+        <?php if(isset($_SESSION['username']) && $user_level_id == 2): ?>
             <a href = "./admin.php" class="nav">Manage Users</a>
         <?php endif ?>
     </div>

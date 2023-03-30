@@ -45,7 +45,8 @@ $statement->execute();
         <?php endif ?>
     </div>
     <div class = "nav">
-        <a href="./index.php">Home</a>
+        <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="./user_registration.php">Create New User</a>
     </div>
     <br>
     <div class = "table">

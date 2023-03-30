@@ -29,14 +29,28 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
 
 	$user = $statement->fetch();
 
-    if($password == $user['password'])
-    {
-        $_SESSION['username'] = $username;
-    }
-    else
+    if($user == null)
     {
         $errorflag = true;
     }
+    else
+    {
+        if($password == $user['password'])
+        {
+            $_SESSION['username'] = $username;
+
+            header('Location: ./index.php');
+            exit;
+        }  
+        else
+        {
+            $errorflag = true;
+        }
+    }
+
+
+
+
 }
 
 ?>
@@ -69,8 +83,9 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
         <label for="password">Password:</label>
         <input id="password" name="password">
         <?php if($_POST && $errorflag): ?>
-            <p class = "invalidlogin">Invalid log-in credentials.  Please try again</p>
+            <p class = "invalidlogin">Invalid log-in credentials.  Please try again.</p>
         <?php endif ?>
+        <br><br>
         <input type="submit" value="Submit">
         </body>
 </html>
