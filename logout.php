@@ -1,6 +1,6 @@
 <?php
 
-/*******w******** 
+/**************** 
     
     Name: Brianne Coleman
     Date: March 29,2023
@@ -10,10 +10,13 @@
 
 session_start();
 
+// Clears all previous session variables
+
 $_SESSION['username'] = null;
+$_SESSION['user_level_id'] = null;
+$_SESSION['user_id'] = null;
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

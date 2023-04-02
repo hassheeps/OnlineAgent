@@ -23,6 +23,8 @@ $statement-> execute();
 if(isset($_SESSION['username']))
 {
     $username = $_SESSION['username'];
+    $user_level_id = $_SESSION['user_level_id'];
+    $user_id = $_SESSION['user_id'];
 
     // retrieves the record from the users table on the database matching the logged in user.
 
@@ -34,9 +36,6 @@ if(isset($_SESSION['username']))
 
     $user = $userstatement->fetch();
 
-    $user_id = $user['user_id'];
-    $user_level_id = $user['user_level_id'];
-
     // Checks for records of a performer profile matching the logged in user.
 
     $query = "SELECT * FROM Performers WHERE user_id = :user_id";
@@ -46,12 +45,13 @@ if(isset($_SESSION['username']))
     $profilestatement->execute();
 
     $profile = $profilestatement->fetch();
-
-    // If no performer profile exists, make the "create performer profile" link visible.
+    
+    // If a performer profile exists, hide the "create performer profile" link.  Set the performer_id to the existing profile.
 
     if($profile != null)
     {
         $profile_exists = true;
+        $performer_id = $profile['performer_id'];
     }
 }
 else
@@ -85,7 +85,10 @@ else
         <?php if(!$profile_exists && isset($_SESSION['username'])): ?>
             <a href="./newprofile.php" class="nav">Create Performer Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <?php endif ?>
-        <?php if(isset($_SESSION['username']) && $user_level_id == 2): ?>
+        <?php if(isset($_SESSION['username']) && $profile_exists): ?>
+            <a href="./profile.php?performer_id=<?= $performer_id ?>">View My Profile</a>
+        <?php endif ?>
+        <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2 ): ?>
             <a href = "./admin.php" class="nav">Manage Users</a>
         <?php endif ?>
     </div>
@@ -93,10 +96,10 @@ else
         <ul class = "profile">
             <li><h3><?= $row['stage_name'] ?></h3></li>
             <li><a href="./profile.php?performer_id=<?= $row['performer_id'] ?>">View Profile</a>
-            <?php if(isset($_SESSION['username']) && $user['user_id'] == $row['user_id']): ?>
-                &nbsp;&nbsp;|&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $row['performer_id'] ?>" class="edit">Edit Profile</a></li>
+            <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
+                &nbsp;|&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $row['performer_id'] ?>" class="edit">Edit Profile</a></li>
             <?php endif ?>
-            <li><a href="<?= $row['website'] ?>"><?= $row['website'] ?></a></li>
+            <li><a href="#"><?= $row['website'] ?></a></li>
         </ul>
     <?php endwhile ?>
 </body>

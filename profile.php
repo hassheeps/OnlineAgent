@@ -1,6 +1,6 @@
 <?php
 
-/*******w******** 
+/**************** 
     
     Name: Brianne Coleman
     Date: March 22, 2023
@@ -44,7 +44,6 @@ else
     $user = "";
 }
 
-
 // Retrieves the record from the database that matches the post id.
 
 $query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
@@ -53,9 +52,6 @@ $statement = $db->prepare($query);
 $statement->execute();
 
 $profile = $statement->fetch();
-
-
-
 
 // The function that validates the post id
 

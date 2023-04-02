@@ -9,18 +9,17 @@
 ****************/
 
 require('connect.php');
-
 session_start();
 
-// error variables
+// Error variables
 
-$error_flag = false;
+$password_error_flag = false;
 $required_error_flag = false;
-$empty = false;
+$empty_flag = false;
 $password_error = "Passwords do not match.  Please try again.";
 $required_field_error = "All fields are required.";
 
-// input variables
+// Input variables
 
 $username = "";
 $password = "";
@@ -29,56 +28,69 @@ $first_name = "";
 $last_name = "";
 $email = "";
 
-
+// Filters and sanitizes the form input data.
 
 if($_POST && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['confirm_password']) && !empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['email']))
 {
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $confirm_password = filter_input(INPUT_POST, 'confirm_password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    if($password != $confirm_password)
+    if(password_verify($confirm_password, $hashed_password))
     {
-        $error_flag = true;
+        $password_error_flag = false;
+    }
+    else 
+    {
+	    $password_error_flag = true;
     }
 }
 
+// Checks if any of the required fields are empty.
+
 if(empty($_POST['username']) || empty($_POST['password']) || empty($_POST['confirm_password']) || empty($_POST['first_name']) || empty($_POST['last_name']) || empty($_POST['email']))
 {
-    $empty = true;
+    $empty_flag = true;
 }
 
-if($_POST && $empty)
+// If any of the required fields are empty when the user clicked "submit", flag form error.
+
+if($_POST && $empty_flag)
 {
     $required_error_flag = true;
 }
 
+// If no errors have been flagged, insert the form data into the database
 
-if(!$error_flag && $_POST && strlen($username) > 0 && strlen($password) > 0 && strlen($first_name) > 0 && strlen($last_name) > 0 && strlen($email) > 0)
+if(!$password_error_flag && !$empty_flag && !$password_error_flag)
 {
     $query = "INSERT INTO users (username, password, first_name, last_name, email) VALUES (:username, :password, :first_name, :last_name, :email)";
 
     $statement= $db->prepare($query);
     $statement->bindValue(':username', $username);
-    $statement->bindValue(':password', $password);
+    $statement->bindValue(':password', $hashed_password);
     $statement->bindValue(':first_name', $first_name);
     $statement->bindValue(':last_name', $last_name);
     $statement->bindValue(':email',  $email);
     $statement->execute();
+
+    // Logs user in as the new user UNLESS it is an admin logged in to create a new user.
 
     if(!isset($_SESSION['username']))
     {
         $_SESSION['username'] = $username;
     }
 
-    // Adds the new post as a record in the database
-
     header('Location: ./index.php');
     exit;
 }
+
+
+
 ?>
 
 <!DOCTYPE HTML>
@@ -98,9 +110,9 @@ if(!$error_flag && $_POST && strlen($username) > 0 && strlen($password) > 0 && s
         <label for="user_name">Username:</label>
         <input id="user_name" name="username">
         <label for="password">Password:</label>
-        <input id="password" name="password"><br>  
+        <input id="password" name="password" type="password"><br>  
         <label for="confirm_password">Confirm Password:</label>
-        <input id="confirm_password" name="confirm_password"><br>
+        <input id="confirm_password" name="confirm_password" type="password"><br>
         <label for="first_name">First Name:</label>
         <input id="first_name" name="first_name"><br>
         <label for="last_name">Last Name:</label>
@@ -109,11 +121,10 @@ if(!$error_flag && $_POST && strlen($username) > 0 && strlen($password) > 0 && s
         <input id="email" name="email"><br>
         <br>
         <input type="submit" value="Submit">
-        <input type="submit" value="Cancel">
     </form>
     <br>
     <div class ='error'>
-        <?php if($error_flag): ?>
+        <?php if($password_error_flag): ?>
             <?= $password_error ?>
         <?php endif ?>
         <?php if($required_error_flag): ?>
