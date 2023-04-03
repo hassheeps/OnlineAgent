@@ -11,7 +11,12 @@
 require('connect.php');
 session_start();
 
-$user_id = $_SESSION['user_id'];
+if(isset($_SESSION['user_id']))
+{
+    $user_id = $_SESSION['user_id'];
+}
+
+$resized_images = [];
 
 // Checks if the post id has been set, retrieves it from the url
 
@@ -54,12 +59,58 @@ $statement->execute();
 
 $profile = $statement->fetch();
 
-// Retrieves the images from the database that match the user_id
+$profile_user_id = $profile['user_id'];
 
-$query = "SELECT * FROM images WHERE user_id = $user_id";
+// Retrieves the images from the database that match the user_id, stores them in an array
+
+$query = "SELECT * FROM images WHERE user_id = $profile_user_id";
 
 $image_statement = $db->prepare($query);
 $image_statement->execute();
+
+$images = [];
+
+while($row = $image_statement->fetch())
+{
+    $images[] = $row;
+}
+
+// Resizing the images for display
+
+for($i=0; $i < count($images); $i++)
+{
+    $source_img = "images/" . $images[$i]['filename'];
+    $destination_img = "images/resized/" . $images[$i]['filename'];
+
+    $size = getimagesize($source_img);
+    $width = $size[0];
+    $height = $size[1];
+
+    $resize = "0.25";
+    $rwidth = ceil($width * $resize);
+    $rheight = ceil($height * $resize);
+
+    if(substr($source_img, -3) == "png")
+    {
+        $original = imagecreatefrompng($source_img);
+
+        $resized = imagecreatetruecolor($rwidth, $rheight);
+        imagecopyresampled($resized, $original, 0, 0, 0, 0, $rwidth, $rheight, $width, $height);
+
+        imagepng($resized, $destination_img);
+    }
+    else 
+    {
+        $original = imagecreatefromjpeg($source_img);
+
+        $resized = imagecreatetruecolor($rwidth, $rheight);
+        imagecopyresampled($resized, $original, 0, 0, 0, 0, $rwidth, $rheight, $width, $height);
+
+        imagejpeg($resized, $destination_img);
+    }
+  
+    $resized_images[] = $destination_img;
+}
 
 // The function that validates the post id
 
@@ -110,10 +161,9 @@ function filter_post_id()
             <li><?= $profile['bio'] ?></li>
         </ul>
     </div>
-    <?php while ($image = $image_statement->fetch()): ?>
-        <ul>
-            <li><img src= images/<?= $image['filename'] ?>></li>"
-        </ul>
-        <?php endwhile ?>
+    <?php foreach ($resized_images as $resized_image): ?>
+    <img src = "<?= $resized_image ?>">
+    <?php endforeach ?>
+    <br><br>
 </body>
 </html>

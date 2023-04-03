@@ -9,7 +9,6 @@
 ****************/
 
 require('connect.php');
-
 session_start();
 
 // Variables
@@ -99,6 +98,69 @@ function filter_performer_id()
     return filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
 }
 
+// Retrieves the record from the database that matches the post id.
+
+$query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
+
+$statement = $db->prepare($query);
+$statement->execute();
+
+$profile = $statement->fetch();
+
+$profile_user_id = $profile['user_id'];
+
+// Retrieves the images from the database that match the user_id, stores them in an array
+
+$query = "SELECT * FROM images WHERE user_id = $profile_user_id";
+
+$image_statement = $db->prepare($query);
+$image_statement->execute();
+
+$images = [];
+
+while($row = $image_statement->fetch())
+{
+    $images[] = $row;
+}
+
+// Resizing the images for display
+
+for($i=0; $i < count($images); $i++)
+{
+    $source_img = "images/" . $images[$i]['filename'];
+    $destination_img = "images/resized/" . $images[$i]['filename'];
+
+    $size = getimagesize($source_img);
+    $width = $size[0];
+    $height = $size[1];
+
+    $resize = "0.25";
+    $rwidth = ceil($width * $resize);
+    $rheight = ceil($height * $resize);
+
+    if(substr($source_img, -3) == "png")
+    {
+        $original = imagecreatefrompng($source_img);
+
+        $resized = imagecreatetruecolor($rwidth, $rheight);
+        imagecopyresampled($resized, $original, 0, 0, 0, 0, $rwidth, $rheight, $width, $height);
+
+        imagepng($resized, $destination_img);
+    }
+    else 
+    {
+        $original = imagecreatefromjpeg($source_img);
+
+        $resized = imagecreatetruecolor($rwidth, $rheight);
+        imagecopyresampled($resized, $original, 0, 0, 0, 0, $rwidth, $rheight, $width, $height);
+
+        imagejpeg($resized, $destination_img);
+    }
+  
+    $resized_images[] = $destination_img;
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -152,5 +214,15 @@ function filter_performer_id()
             </div>
         <?php endif ?>
     </form>
+        <?php if(count($resized_images) > 0): ?>
+        <ul>
+            <?php foreach ($resized_images as $resized_image): ?>
+                <li><input type="checkbox" id="resized_image" name="resized_image" value="resized_image"><img src = "<?= $resized_image ?>"></li>
+                <?php print_r($resized_image) ?>
+            <?php endforeach ?>
+        </ul>
+        <input type="submit" id="img_delete" name="img_delete" value="Delete" onclick="return confirmDeleteImg()">
+       <?php endif ?> 
+       
 </body>
 </html>

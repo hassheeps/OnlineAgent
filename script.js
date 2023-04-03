@@ -19,8 +19,18 @@ function confirmDelete()
 	
 	if(!confirm)
 	{
-		return false
+		return false;
 	}
+}
+
+function confirmDeleteImg()
+{
+	return confirm("Are you sure you want to delete the selected image(s)?");
+
+	if (!confirm)
+	{
+		return false;
+    }
 }
 
 function confirmUpdate()
@@ -29,7 +39,7 @@ function confirmUpdate()
 
 	if(!confirm)
 		{
-			return false
+		return false;
 		}
 }
 

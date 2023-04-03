@@ -38,6 +38,16 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
     $user_id = $user['user_id'];
     $user_level_id = $user['user_level_id'];
     $hash = $user['password'];
+
+    $query = "SELECT * FROM performers WHERE user_id = :user_id";
+
+    $performerstatement = $db->prepare($query);
+    $performerstatement-> bindValue(':user_id', $user_id);
+    $performerstatement->execute();
+
+    $performer = $performerstatement->fetch();
+
+    $performer_id = $performer['performer_id'];
     
 
     // If no such user exists, raise an error flag
@@ -55,6 +65,7 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
             $_SESSION['username'] = $username;
             $_SESSION['user_level_id'] = $user_level_id;
             $_SESSION['user_id'] = $user_id;
+            $_SESSION['performer_id'] = $performer_id;
 
             header('Location: ./index.php');
             exit;

@@ -10,8 +10,8 @@
 require('connect.php');
 session_start();
 
-
 $user_id = $_SESSION['user_id'];
+$performer_id = $_SESSION['performer_id'];
 
  // file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
 
@@ -33,12 +33,10 @@ function file_is_an_image($temporary_path, $new_path)
     $allowed_file_extensions = ['jpg', 'jpeg', 'png'];
 
     $actual_file_extension = pathinfo($new_path, PATHINFO_EXTENSION);
-    //$actual_mime_type = getimagesize($temporary_path)['mime'];
 
     $file_extension_is_valid = in_array($actual_file_extension, $allowed_file_extensions);
-    //$mime_type_is_valid = in_array($actual_mime_type, $allowed_mime_types);
 
-    return $file_extension_is_valid; //&& $mime_type_is_valid;
+    return $file_extension_is_valid; 
 }
 
 $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
@@ -68,10 +66,7 @@ if($image_upload_detected)
     {
         $filetype_error_flag = true;
     }
-	
 }
-
-
 
 ?>
 
@@ -87,6 +82,7 @@ if($image_upload_detected)
 <body>
     <h1>Upload an Image</h1>
     <a href="./index.php" class="nav">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="./profile.php?performer_id=<?= $performer_id ?>">Return to Profile</a>
     <br><br><br>
     <form method="post" enctype="multipart/form-data">
         <label for="image">Filename:</label>
@@ -99,7 +95,7 @@ if($image_upload_detected)
     <?php endif ?>
     <?php if($filetype_error_flag): ?>
         <p class="error"><?= $filetype_error ?></p>
-    <?php elseif($_POST): ?>
+    <?php elseif($_POST && !$upload_error_detected): ?>
         <p>Upload successful</p>
     <?php endif ?>
     
