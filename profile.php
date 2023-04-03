@@ -9,8 +9,9 @@
 ****************/
 
 require('connect.php');
-
 session_start();
+
+$user_id = $_SESSION['user_id'];
 
 // Checks if the post id has been set, retrieves it from the url
 
@@ -52,6 +53,13 @@ $statement = $db->prepare($query);
 $statement->execute();
 
 $profile = $statement->fetch();
+
+// Retrieves the images from the database that match the user_id
+
+$query = "SELECT * FROM images WHERE user_id = $user_id";
+
+$image_statement = $db->prepare($query);
+$image_statement->execute();
 
 // The function that validates the post id
 
@@ -102,5 +110,10 @@ function filter_post_id()
             <li><?= $profile['bio'] ?></li>
         </ul>
     </div>
+    <?php while ($image = $image_statement->fetch()): ?>
+        <ul>
+            <li><img src= images/<?= $image['filename'] ?>></li>"
+        </ul>
+        <?php endwhile ?>
 </body>
 </html>

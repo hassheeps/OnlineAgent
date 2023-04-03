@@ -122,7 +122,8 @@ function filter_performer_id()
     <div class="nav">
         <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>
+        <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="./uploadimage.php">Upload Image</a>
     </div>
     <br>
     <form method="post">
