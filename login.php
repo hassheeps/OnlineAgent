@@ -35,29 +35,28 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
 
 	$user = $statement->fetch();
 
-    $user_id = $user['user_id'];
-    $user_level_id = $user['user_level_id'];
-    $hash = $user['password'];
-
-    $query = "SELECT * FROM performers WHERE user_id = :user_id";
-
-    $performerstatement = $db->prepare($query);
-    $performerstatement-> bindValue(':user_id', $user_id);
-    $performerstatement->execute();
-
-    $performer = $performerstatement->fetch();
-
-    $performer_id = $performer['performer_id'];
-    
-
     // If no such user exists, raise an error flag
-
-    if($user == null)
+    if($user == "")
     {
         $errorflag = true;
     }
-    else
+    
+    if(!$errorflag)
     {
+        $user_id = $user['user_id'];
+        $user_level_id = $user['user_level_id'];
+        $hash = $user['password'];
+
+        $query = "SELECT * FROM performers WHERE user_id = :user_id";
+
+        $performerstatement = $db->prepare($query);
+        $performerstatement-> bindValue(':user_id', $user_id);
+        $performerstatement->execute();
+
+        $performer = $performerstatement->fetch();
+
+        $performer_id = $performer['performer_id'];
+
         // Set the session username and user permissions level.
         
         if(password_verify($password, $hash))
@@ -74,7 +73,7 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
         {
             $errorflag = true;
         }
-    }
+	}
 }
 
 ?>
@@ -107,7 +106,7 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
         <label for="password">Password:</label>
         <input id="password" name="password" type="password">
         <?php if($_POST && $errorflag): ?>
-            <p class = "invalidlogin">Invalid log-in credentials.  Please try again. <?= $password ?></p>
+            <p class = "invalidlogin">Invalid log-in credentials.  Please try again.</p>
         <?php endif ?>
         <br><br>
         <input type="submit" value="Submit">

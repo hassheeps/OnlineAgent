@@ -161,6 +161,34 @@ for($i=0; $i < count($images); $i++)
 }
 
 
+if(isset($_POST['img_delete']))
+{
+    if(isset($_POST['checkbox']))
+    {
+        foreach($_POST['checkbox'] as $filename)
+        {
+            //delete file from resized folder
+            unlink($filename);    
+
+            $index = strripos($filename, '/');
+            $filename = substr($filename, $index + 1);
+
+            //delete file from image folder
+            unlink("images/" . $filename);
+
+            $query = "DELETE FROM images WHERE filename = :filename";
+
+            $statement = $db->prepare($query);
+            $statement->bindValue(':filename', $filename);
+            $statement->execute();
+        }
+    }
+
+    header('Location: ./index.php');
+    exit;
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -185,7 +213,9 @@ for($i=0; $i < count($images); $i++)
         <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <?php if($_SESSION['performer_id'] == $profile['performer_id']): ?>    
         <a href="./uploadimage.php">Upload Image</a>
+    <?php endif ?>
     </div>
     <br>
     <form method="post">
@@ -214,15 +244,15 @@ for($i=0; $i < count($images); $i++)
             </div>
         <?php endif ?>
     </form>
-        <?php if(count($resized_images) > 0): ?>
-        <ul>
-            <?php foreach ($resized_images as $resized_image): ?>
-                <li><input type="checkbox" id="resized_image" name="resized_image" value="resized_image"><img src = "<?= $resized_image ?>"></li>
-                <?php print_r($resized_image) ?>
-            <?php endforeach ?>
-        </ul>
-        <input type="submit" id="img_delete" name="img_delete" value="Delete" onclick="return confirmDeleteImg()">
-       <?php endif ?> 
-       
+        <?php if(count($images) > 0): ?>
+            <form method="post">
+                <ul>
+                    <?php foreach ($resized_images as $resized_image): ?>
+                        <li><input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>"></li>
+                    <?php endforeach ?> 
+                </ul>
+                <input type="submit" value="Delete" name="img_delete" onclick="return confirmDeleteImg()">
+            </form>
+        <?php endif ?>
 </body>
 </html>

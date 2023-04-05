@@ -112,6 +112,11 @@ for($i=0; $i < count($images); $i++)
     $resized_images[] = $destination_img;
 }
 
+$query = "SELECT * FROM acts WHERE performer_id = $performer_id";
+
+$act_statement = $db->prepare($query);
+$act_statement->execute();
+
 // The function that validates the post id
 
 function filter_post_id()
@@ -148,12 +153,12 @@ function filter_post_id()
         <?php endif ?>
     </div>
     <div class="contact"> 
-    <ul> 
-        <li><h3>Contact Details:</h3></li>
-        <li><?= $profile['contact_phone'] ?></li>
-        <li><?= $profile['contact_email'] ?></li>
-        <li><?= $profile['website'] ?></li>
-    </ul>
+        <ul> 
+            <li><h3>Contact Details:</h3></li>
+            <li><?= $profile['contact_phone'] ?></li>
+            <li><?= $profile['contact_email'] ?></li>
+            <li><?= $profile['website'] ?></li>
+        </ul>
     </div>
     <div class="bio">
         <ul>
@@ -161,9 +166,23 @@ function filter_post_id()
             <li><?= $profile['bio'] ?></li>
         </ul>
     </div>
-    <?php foreach ($resized_images as $resized_image): ?>
-    <img src = "<?= $resized_image ?>">
-    <?php endforeach ?>
+ <!--   <div class = "act">
+        <h3>Act Information</h3>
+        <?php while($row = $act_statement->fetch()): ?>
+            <ul>
+            <li>Act Name: <?= $row['act_name'] ?></li>
+            <li>Act Description: <?= $row['description'] ?></li>
+            <br><br>
+            </ul>
+        <?php endwhile ?>
+    </div> -->
+    <br><br>
+    <div class = "images">
+        <h3>Photos</h3>
+        <?php foreach ($resized_images as $resized_image): ?>
+            <img src = "<?= $resized_image ?>">
+        <?php endforeach ?>
+    </div>
     <br><br>
 </body>
 </html>

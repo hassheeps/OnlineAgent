@@ -13,6 +13,7 @@ session_start();
 $user_id = $_SESSION['user_id'];
 $performer_id = $_SESSION['performer_id'];
 
+
  // file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
 
 function file_upload_path($original_filename, $upload_subfolder_name = 'images')
