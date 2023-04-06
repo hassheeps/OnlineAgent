@@ -11,23 +11,17 @@
 require('connect.php');
 session_start();
 
+$user_id = $_SESSION['user_id'];
+$performer_id = $_SESSION['performer_id'];
+
+/**********************************
+    Performer Information Form 
+**********************************/
+
 // Variables
 
-$performer_id = "";
 $error_flag = false;
 $error_message = "Contact details cannot be empty.";
-
-// Checks if the post id has been set, retrieves it from the url
-
-if(isset($_GET['performer_id']) && filter_performer_id())
-{
-    $performer_id = $_GET['performer_id'];
-}
-else
-{
-    header('Location: ./index.php');
-    exit;
-}
 
 // Checks if the "delete" button was what caused the form to submit.
 
@@ -70,7 +64,7 @@ else
             $statement->bindValue(':bio', $bio);
             $statement->execute();
 
-            header('Location: ./index.php');
+            header('Location: ./edit.php?performer_id={$performer_id}');
             exit;
         }
         else
@@ -98,20 +92,69 @@ function filter_performer_id()
     return filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
 }
 
-// Retrieves the record from the database that matches the post id.
+/**********************************
+    Upload Image Form 
+**********************************/
 
-$query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
+// Variables
 
-$statement = $db->prepare($query);
-$statement->execute();
+$image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
+$upload_error_detected = isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
+$filetype_error = "File must be an image filetype (.jpeg, .jpg, or .png).";
+$filetype_error_flag = false;
 
-$profile = $statement->fetch();
+ // file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
 
-$profile_user_id = $profile['user_id'];
+function file_upload_path($original_filename, $upload_subfolder_name = 'images')
+{
+    $current_folder = dirname(__FILE__);
+
+    // Build an array of paths segment names to be joins using OS specific slashes.
+    $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
+
+    // The DIRECTORY_SEPARATOR constant is OS agnostic.
+    return join(DIRECTORY_SEPARATOR, $path_segments);
+}
+
+// file_is_an_image() - Checks the mime-type & extension of the uploaded file for "image-ness".
+function file_is_an_image($temporary_path, $new_path)
+{
+    $allowed_mime_types = ['image/jpeg', 'image/png'];
+    $allowed_file_extensions = ['jpg', 'jpeg', 'png'];
+
+    $actual_file_extension = pathinfo($new_path, PATHINFO_EXTENSION);
+
+    $file_extension_is_valid = in_array($actual_file_extension, $allowed_file_extensions);
+
+    return $file_extension_is_valid; 
+}
+
+if($image_upload_detected)
+{
+    $image_filename = $_FILES['image']['name'];
+    $temporary_image_path = $_FILES['image']['tmp_name'];
+    $new_image_path = file_upload_path($image_filename);
+
+    if(file_is_an_image($temporary_image_path, $new_image_path))
+    {
+        move_uploaded_file($temporary_image_path, $new_image_path);
+
+        $query = "INSERT INTO images (filename, user_id) VALUES (:filename, :user_id)";
+
+        $statement= $db->prepare($query);
+        $statement->bindValue(':filename', $image_filename);
+        $statement->bindValue(':user_id', $user_id);
+        $statement->execute();
+    }
+    else 
+    {
+        $filetype_error_flag = true;
+    }
+}
 
 // Retrieves the images from the database that match the user_id, stores them in an array
 
-$query = "SELECT * FROM images WHERE user_id = $profile_user_id";
+$query = "SELECT * FROM images WHERE user_id = $user_id";
 
 $image_statement = $db->prepare($query);
 $image_statement->execute();
@@ -160,7 +203,6 @@ for($i=0; $i < count($images); $i++)
     $resized_images[] = $destination_img;
 }
 
-
 if(isset($_POST['img_delete']))
 {
     if(isset($_POST['checkbox']))
@@ -184,10 +226,9 @@ if(isset($_POST['img_delete']))
         }
     }
 
-    header('Location: ./index.php');
+    header('Location: ./profile.php?performer_id={$performer_id}');
     exit;
 }
-
 
 ?>
 
@@ -213,14 +254,13 @@ if(isset($_POST['img_delete']))
         <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <?php if($_SESSION['performer_id'] == $profile['performer_id']): ?>    
-        <a href="./uploadimage.php">Upload Image</a>
-    <?php endif ?>
     </div>
     <br>
     <form method="post">
         <input type="hidden" name="performer_id" value="<?= $profile['performer_id'] ?>">
         <?php if(!$error_flag): ?>
+            <h3>Performer Information</h3>
+            <br>
             <label for="stage_name">Stage Name:</label>
             <input id="stage_name" name="stage_name" size="50" value="<?= $profile['stage_name'] ?>">
             <br><br>
@@ -244,6 +284,21 @@ if(isset($_POST['img_delete']))
             </div>
         <?php endif ?>
     </form>
+    <br><br>
+    <form method="post" enctype="multipart/form-data">
+        <label for="image">Filename:</label>
+        <input type="file" name="image" id="image">
+        <input type="submit" name="submit" value="Upload Image">
+    </form>
+    <br>
+    <?php if ($upload_error_detected): ?>
+        <p>Error Number: <?= $_FILES['image']['error'] ?></p>
+    <?php endif ?>
+    <?php if($filetype_error_flag): ?>
+        <p class="error"><?= $filetype_error ?></p>
+    <?php elseif($_POST && !$upload_error_detected): ?>
+        <p>Upload successful</p>
+    <?php endif ?>
         <?php if(count($images) > 0): ?>
             <form method="post">
                 <ul>
@@ -251,7 +306,7 @@ if(isset($_POST['img_delete']))
                         <li><input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>"></li>
                     <?php endforeach ?> 
                 </ul>
-                <input type="submit" value="Delete" name="img_delete" onclick="return confirmDeleteImg()">
+                <input type="submit" id="img_delete" value="Delete Image(s)" name="img_delete" onclick="return confirmDeleteImg()">
             </form>
         <?php endif ?>
 </body>
