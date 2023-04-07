@@ -230,6 +230,20 @@ if(isset($_POST['img_delete']))
     exit;
 }
 
+$query = "SELECT * from acts WHERE performer_id = $performer_id";
+
+$actstatement = $db->prepare($query);
+//$actstatement->bindValue(':performer_id', $performer_id);
+$actstatement->execute();
+
+$acts = [];
+
+while($actrow = $actstatement->fetch())
+{
+    $acts[] = $actrow;
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -243,71 +257,100 @@ if(isset($_POST['img_delete']))
     <title>Edit Performer Profile</title>
 </head>
 <body>
-    <h1>Edit Performer Profile</h1>
-    <div class = "username">
-        <?php if(isset($_SESSION['username'])): ?>
-            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href = "./logout.php">Log Out</a>
-        <?php endif ?>
-    </div>
-    <div class="nav">
-        <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    </div>
-    <br>
-    <form method="post">
-        <input type="hidden" name="performer_id" value="<?= $profile['performer_id'] ?>">
-        <?php if(!$error_flag): ?>
-            <h3>Performer Information</h3>
-            <br>
-            <label for="stage_name">Stage Name:</label>
-            <input id="stage_name" name="stage_name" size="50" value="<?= $profile['stage_name'] ?>">
-            <br><br>
-            <label for="website">Website:</label>
-            <input id="website" name="website" size="50" value="<?= $profile['website'] ?>">
-            <br><br>
-            <label for="contact_phone">Phone Number:</label>
-            <input id="contact_phone" name="contact_phone" size="50" value="<?= $profile['contact_phone'] ?>">
-            <br><br>
-            <label for="contact_email">Email Address:</label>
-            <input id="contact_email" name="contact_email" size="50" value="<?= $profile['contact_email'] ?>">
-            <br><br>
-            <label for="bio">Bio:</label>
-            <textarea id="bio" name="bio" rows="10" cols="50"><?= $profile['bio'] ?></textarea>
-            <br><br>
-            <input type="submit" name="update" id="update" value="Update Profile" onclick="return confirmUpdate()">
-            <input type="submit" name="delete" id="delete" value="Delete Profile" onclick="return confirmDelete()">
-        <?php else: ?>
-            <div class = "error">
-                <?= $error_message ?>
+    <section id = "header">
+        <h1>Edit Performer Profile</h1>
+        <br><br>
+        <div class = "navcontainer">
+            <div class = "navbox1">
+                <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
             </div>
-        <?php endif ?>
-    </form>
-    <br><br>
-    <form method="post" enctype="multipart/form-data">
-        <label for="image">Filename:</label>
-        <input type="file" name="image" id="image">
-        <input type="submit" name="submit" value="Upload Image">
-    </form>
-    <br>
-    <?php if ($upload_error_detected): ?>
-        <p>Error Number: <?= $_FILES['image']['error'] ?></p>
-    <?php endif ?>
-    <?php if($filetype_error_flag): ?>
-        <p class="error"><?= $filetype_error ?></p>
-    <?php elseif($_POST && !$upload_error_detected): ?>
-        <p>Upload successful</p>
-    <?php endif ?>
-        <?php if(count($images) > 0): ?>
+            <div class = "navbox2">
+                <?php if(isset($_SESSION['username'])): ?>
+                    Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href = "./logout.php">Log Out</a>
+                <?php endif ?> 
+            </div>
+        </div>
+    </section>
+    <section id = "profileinfo">
+        <div class = "infobox">
             <form method="post">
-                <ul>
-                    <?php foreach ($resized_images as $resized_image): ?>
-                        <li><input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>"></li>
-                    <?php endforeach ?> 
-                </ul>
-                <input type="submit" id="img_delete" value="Delete Image(s)" name="img_delete" onclick="return confirmDeleteImg()">
+                <input type="hidden" name="performer_id" value="<?= $profile['performer_id'] ?>">
+                <?php if(!$error_flag): ?>
+                    <h3>Performer Information</h3>
+                    <br>
+                    <label for="stage_name">Stage Name:</label>
+                    <input id="stage_name" name="stage_name" size="50" value="<?= $profile['stage_name'] ?>">
+                    <br><br>
+                    <label for="website">Website:</label>
+                    <input id="website" name="website" size="50" value="<?= $profile['website'] ?>">
+                    <br><br>
+                    <label for="contact_phone">Phone Number:</label>
+                    <input id="contact_phone" name="contact_phone" size="50" value="<?= $profile['contact_phone'] ?>">
+                    <br><br>
+                    <label for="contact_email">Email Address:</label>
+                    <input id="contact_email" name="contact_email" size="50" value="<?= $profile['contact_email'] ?>">
+                    <br><br>
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" name="bio" rows="10" cols="50"><?= $profile['bio'] ?></textarea>
+                    <br><br>
+                    <input type="submit" name="update" id="update" value="Update Profile" onclick="return confirmUpdate()">
+                    <input type="submit" name="delete" id="delete" value="Delete Profile" onclick="return confirmDelete()">
+                <?php else: ?>
+                    <div class = "error">
+                        <?= $error_message ?>
+                    </div>
+                <?php endif ?>
+                <br><br>
             </form>
-        <?php endif ?>
+        </div>
+    </section>
+    <section id = "photos">
+        <div class = "uploadform">
+            <form method="post" enctype="multipart/form-data">
+                <label for="image"><h3>Upload New Image</h3></label><br>
+                <input type="file" name="image" id="image">
+                <input type="submit" name="submit" value="Upload Image">
+            </form><br>
+        </div>
+            <br>
+            <?php if ($upload_error_detected): ?>
+                <p>Error Number: <?= $_FILES['image']['error'] ?></p>
+            <?php endif ?>
+            <?php if($filetype_error_flag): ?>
+                <p class="error"><?= $filetype_error ?></p>
+            <?php elseif($_POST && !$upload_error_detected): ?>
+                <p>Upload successful</p>
+            <?php endif ?>
+        <div class = "photoform">
+            <?php if(count($images) > 0): ?>
+                <h3>Delete Images</h3><br>
+                <form method="post">   
+                    <?php foreach ($resized_images as $resized_image): ?>
+                        <input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>">
+                    <?php endforeach ?>
+                    <br><br>
+                    <input type="submit" id="img_delete" value="Delete Image(s)" name="img_delete" onclick="return confirmDeleteImg()">
+                </form>
+            <?php endif ?>
+            <br>
+        </div>
+        <div class = "editacts">
+            <h3>Edit Acts</h3><br>
+                <?php foreach ($acts as $act): ?>
+                    <a href="./editact.php?act_id=<?= $act['act_id'] ?>"><?= $act['act_name'] ?></a><br>
+                <?php endforeach ?>
+        </div>
+    </section>
+    <footer>
+        <br>
+        <p>Winnipeg Performing Arts Collective</p>
+        <p>123 Main Street | Winnipeg, Manitoba</p>
+        <p>&copy; Copyright 2023</p>
+    </footer>
+    <br><br>
+    <p>&nbsp;</p>
 </body>
 </html>

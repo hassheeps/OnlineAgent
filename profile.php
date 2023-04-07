@@ -136,53 +136,72 @@ function filter_post_id()
     <title>Profile - <?= $profile['stage_name'] ?></title>
 </head>
 <body>
-    <h1><?= $profile['stage_name'] ?></h1>
-    <div class = "timestamp">
-        Created: <?= $profile['date_created'] ?>
-    </div>
-    <div class = "username">
-        <?php if(isset($_SESSION['username'])): ?>
-            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href = "./logout.php">Log Out</a>
-        <?php endif ?>
-    </div>
-    <div class="nav">
-        <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
-            <a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>
-        <?php endif ?>
-    </div>
-    <div class="contact"> 
-        <ul> 
-            <li><h3>Contact Details:</h3></li>
-            <li><?= $profile['contact_phone'] ?></li>
-            <li><?= $profile['contact_email'] ?></li>
-            <li><?= $profile['website'] ?></li>
-        </ul>
-    </div>
-    <div class="bio">
-        <ul>
-            <li><h3>Bio</h3></li>
-            <li><?= $profile['bio'] ?></li>
-        </ul>
-    </div>
- <!--   <div class = "act">
-        <h3>Act Information</h3>
-        <?php while($row = $act_statement->fetch()): ?>
-            <ul>
-            <li>Act Name: <?= $row['act_name'] ?></li>
-            <li>Act Description: <?= $row['description'] ?></li>
-            <br><br>
+    <section id = "header">
+        <h1><?= $profile['stage_name'] ?></h1>
+        <div class = "timestamp">
+            Created: <?= $profile['date_created'] ?>
+        </div>
+        <div class = "navcontainer">
+            <div class = "navbox1">
+                <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
+                    <a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>
+                <?php endif ?>
+            </div>
+            <div class = "navbox2">
+                <?php if(isset($_SESSION['username'])): ?>
+                    Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href = "./logout.php">Log Out</a>
+                <?php endif ?> 
+            </div>
+        </div>
+    </section>
+    <section id = "profileinfo">
+        <div class = "infobox">
+            <div class = "photoform">
+            <ul> 
+                <li><h3>Contact Details</h3></li>
+                <li><?= $profile['contact_phone'] ?></li>
+                <li><?= $profile['contact_email'] ?></li>
+                <li><?= $profile['website'] ?></li>
             </ul>
-        <?php endwhile ?>
-    </div> -->
+            </div>
+            <div class = "photoform">
+            <ul>
+                <li><h3>Bio</h3></li>
+                <li><?= $profile['bio'] ?></li>
+            </ul>
+            <br>
+            </div>
+            <ul>
+                <li><h3>Act Information</h3></li>
+            </ul>
+            <?php while($row = $act_statement->fetch()): ?>
+                <ul>
+                    <li>Act Name: <?= $row['act_name'] ?></li>
+                    <li>Act Description: <?= $row['description'] ?></li>
+                <br>
+                </ul> 
+            <?php endwhile ?>
+        </div>
+    </section>
+    <section id = "photos">
+        <div class = "images">
+            <h3>Photos</h3>
+            <br>
+            <?php foreach ($resized_images as $resized_image): ?>
+                <img src = "<?= $resized_image ?>">
+            <?php endforeach ?>
+            <br><br>
+        </div>
+    </section>
+    <footer>
+        <br>
+        <p>Winnipeg Performing Arts Collective</p>
+        <p>123 Main Street | Winnipeg, Manitoba</p>
+        <p>&copy; Copyright 2023</p>
+    </footer>
     <br><br>
-    <div class = "images">
-        <h3>Photos</h3>
-        <?php foreach ($resized_images as $resized_image): ?>
-            <img src = "<?= $resized_image ?>">
-        <?php endforeach ?>
-    </div>
-    <br><br>
+    <p>&nbsp;</p>
 </body>
 </html>

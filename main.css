@@ -1,4 +1,4 @@
-/*******w******** 
+/**************** 
     
     Name: Brianne Coleman
     Date: March 22, 2023
@@ -7,38 +7,99 @@
 ****************/
 
 body {
-	font-family: 'Alegreya', serif;
+	font-family:'Century Gothic', sans-serif;
 	font-size: 15px;
-	margin: 20px auto;
+	margin: 10px auto;
 	width: 1230px;
 }
 
-ul {
-	list-style: none;
+.navcontainer{
+	display:flex;
+}
+
+.navbox1{
+	flex:1;
+	width:49%;
+}
+
+.navbox2 {
+	flex: 1;
+	width: 49%;
+	order: 2;
+	text-align: right;
+}
+
+
+#header {
+	height: 100px;
+	margin: 10px;
+	margin-top: 30px;
+	border-bottom-style: solid;
+	border-width: 0.5px;
+}
+
+#profileinfo {
+	float: left;
+	width: 48%;
+	height: 100%;
+	margin-left: 10px;
+}
+
+.infobox {
+	width:85%;
+	
+}
+
+#photos{
+	float: left;
+	width: 49%;
+	padding: 10px;
+}
+
+.uploadform{
+	text-align: left;
+	border-bottom-style: solid;
+	border-width: 0.5px;
+}
+
+.photoform{
+	text-align: left;
+	border-bottom-style: solid;
+	border-width: 0.5px;
 
 }
 
-ul li{
-	padding-top: 10px;
+.photoform img{
+	max-width: 100px;
 }
 
-.contact{
-	margin-left: -40px;
+.editacts{
+	text-align: left;
 }
 
-.bio{
-	margin-left: -40px;
-	width: 250px;
+footer{
+	border-top-style: solid;
+	border-width: 1px;
+	border-color: black;
+	height:125px;
+	width: 100%;
+	float: left;
+	font-size: 12px;
+	color: darkgrey;
+	text-align: center;
 }
 
-.profile{
+.profile {
 	border-style: solid;
 	border-width: 1px;
 	padding-bottom: 15px;
 }
 
-.userlist
-{
+.headerbox{
+	width: 100%;
+}
+
+.userlist {
 	border-style: solid;
 	border-width: 1px;
 }
@@ -49,7 +110,7 @@ ul li{
 	font-size: 25px;
 }
 
-.edit{
+.edit {
 	font-size: 15px;
 }
 
@@ -77,6 +138,18 @@ ul li{
 
 }
 
+textarea {
+	font-family: 'Century Gothic', sans-serif;
+}
+
+input {
+	font-family: 'Century Gothic', sans-serif;
+}
+
+select {
+	font-family: 'Century Gothic', sans-serif;
+}
+
 #title{
 	width: 50%;
 }
@@ -90,7 +163,7 @@ a{
 	text-decoration: none;
 	color: #000;
 	font-size: 15px;
-	font-weight: bold;
+	color:darkblue;
 }
 
 a:hover{
@@ -103,34 +176,42 @@ a:hover{
 	text-decoration: none;
 }
 
+ul {
+	list-style: none;
+}
+
+ul li {
+	padding-top: 10px;
+}
+
+
 h1{
 	font-size: 30px;
+	font-weight: normal;
 	text-decoration: none;
 	text-align: center;
 	color: darkblue;
 	margin-bottom: 0px;
 }
 
-h2{
+h2 {
 	padding-left: 40px;
 	color: darkblue;
+	font-weight: normal;
 }
 
-h3{
+h3 {
 	font-size: 22px;
 	font-weight: bold;
 	padding: 0px;
 	margin: 0px;
+	font-weight: normal;
 }
 
 .error{
 	color: red;	
 }
 
-.username{
-	font-weight: bold;
-	text-align: right;
-}
 
 .logout{
 	text-align:center;
@@ -150,7 +231,6 @@ h3{
 thead{
 	border-style: solid;
 	border-width: 1px;
-	position: flex;
 }
 
 th {
@@ -181,3 +261,10 @@ th {
 	border-style: solid;
 	border-width: 1px;
 }
+
+img{
+	max-height: 300px;
+	border-style: solid;
+	border-color: darkblue;
+}
+

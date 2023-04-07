@@ -3,7 +3,7 @@
 /*************** 
     
     Name: Brianne Coleman
-    Date: March 22, 2023
+    Date: April 7, 2023
     Description: WebDev 2 Final Project - Add act information to a profile
 
 ****************/
@@ -11,25 +11,30 @@
 require('connect.php');
 session_start();
 
-$act_name = "";
-$description = "";
-$category_id = "";
-$apparatus_id = "";
-$stage_name = "";
+$performer_id = $_SESSION['performer_id'];
+$act_id = $_GET['act_id'];
 
-
-    $performer_id = $_GET['performer_id'];
-
-
-if($performer_id != null)
+if($performer_id!= null)
 {
-    $query = "SELECT * FROM Performers WHERE performer_id = :performer_id";
+    $query = "SELECT * FROM performers WHERE performer_id = :performer_id";
 
     $statement = $db->prepare($query);
     $statement->bindValue(':performer_id', $performer_id);
     $statement->execute();
 
     $performer = $statement->fetch();
+}
+
+
+if($act_id != null)
+{
+    $query = "SELECT * FROM Acts WHERE act_id = :act_id";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':act_id', $act_id);
+    $statement->execute();
+
+    $act = $statement->fetch();
 }
 
 // Verifies that a post has occurred and a value exists.  The value is then sanitized to be used as a variable.
@@ -99,51 +104,54 @@ function filter_performer_id()
     <title>Create Act</title>
 </head>
 <body>
-<section id = "header">
-    <h1>New Act</h1><br><br>
-    <div class = "navcontainer">
-        <div class = "navbox1">
-            <a href="./index.php" class="nav">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="./profile.php?performer_id=<?= $performer_id ?>">Return to Profile</a>
-        </div>
-        <div class = "navbox2">
-            <?php if(isset($_SESSION['username'])): ?>
-                Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href = "./logout.php">Log Out</a>
-            <?php endif ?> 
-        </div>
-    </div>
-</section>
-<br>
-    <h3>Stage Name: <?= $performer['stage_name'] ?></h3>
-    <br>
-    <form method="post" action="newact.php?performer_id=<?= $performer_id ?>">
-        <label for="act_name">Act Name:</label>
-        <input id="act_name" name="act_name"><br><br>
-        <label for="category">Category:</label>
-        <select id="category" name="category">
-            <option value="Circus">Circus</option>
-            <option value="Dance">Dance</option>
-            <option value="Music">Music</option>
-            <option value="Magic">Magic</option>
-            <option value="Comedy">Comedy</option>
-            <option value="Variety">Variety</option>
-        </select><br><br>
-        <label for="apparatus" name="apparatus">Apparatus</label>
-        <select id="apparatus" name="apparatus">
-            <option value="None">None</option>
-            <option value="Silks">Silks</option>
-            <option value="Handbalance/Hand-to-Hand">Handbalance/Hand-to-Hand</option>
-            <option value="Aerial Hoop">Aerial Hoop</option>
-            <option value="Lollipop">Lollipop</option>
-            <option value="Contortion">Contortion</option>
-            <option value="Juggling">Juggling</option>
-            <option value="Trapeze">Trapeze</option>
-            <option value="Cyr Wheel">Cyr Wheel</option>
-        </select><br><br>
-        <label for="description">Act Description:</label>
-        <textarea id="description" name="description" rows="10" cols="50"></textarea><br><br>
-        <input type="submit" value="Submit">     
+    <section id = "header">
+            <h1>Edit Act</h1><br><br>
+            <div class = "navcontainer">
+                <div class = "navbox1">
+                    <a href="./index.php" class="nav">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="./profile.php?performer_id=<?= $performer_id ?>">Return to Profile</a>
+                </div>
+                <div class = "navbox2">
+                    <?php if(isset($_SESSION['username'])): ?>
+                        Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a href = "./logout.php">Log Out</a>
+                    <?php endif ?> 
+                </div>
+            </div>
+    </section>
+    <section id = "profileinfo">
+        <div class = "infobox">
+            <h3>Stage Name: <?= $performer['stage_name'] ?></h3>
+            <br>
+            <form method="post" action="newact.php?performer_id=<?= $performer_id ?>">
+                <label for="act_name">Act Name:</label>
+                <input id="act_name" name="act_name" value="<?= $act['act_name'] ?>"><br><br>
+                <label for="category">Category:</label>
+                <select id="category" name="category">
+                    <option value="Circus">Circus</option>
+                    <option value="Dance">Dance</option>
+                    <option value="Music">Music</option>
+                    <option value="Magic">Magic</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Variety">Variety</option>
+                </select><br><br>
+                <label for="apparatus" name="apparatus">Apparatus</label>
+                <select id="apparatus" name="apparatus">
+                    <option value="None">None</option>
+                    <option value="Silks">Silks</option>
+                    <option value="Handbalance/Hand-to-Hand">Handbalance/Hand-to-Hand</option>
+                    <option value="Aerial Hoop">Aerial Hoop</option>
+                    <option value="Lollipop">Lollipop</option>
+                    <option value="Contortion">Contortion</option>
+                    <option value="Juggling">Juggling</option>
+                    <option value="Trapeze">Trapeze</option>
+                    <option value="Cyr Wheel">Cyr Wheel</option>
+                </select><br><br>
+                <label for="description">Act Description:</label>
+                <textarea id="description" name="description" rows="10" cols="50"><?= $act['description'] ?></textarea><br><br>
+                <input type="submit" value="Submit">
+            </div>
+        </section>
     <footer>
         <br>
         <p>Winnipeg Performing Arts Collective</p>
