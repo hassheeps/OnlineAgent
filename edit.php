@@ -226,7 +226,7 @@ if(isset($_POST['img_delete']))
         }
     }
 
-    header('Location: ./profile.php?performer_id={$performer_id}');
+    header("Location: profile.php?performer_id={$performer_id}");
     exit;
 }
 
@@ -242,7 +242,6 @@ while($actrow = $actstatement->fetch())
 {
     $acts[] = $actrow;
 }
-
 
 ?>
 
@@ -264,7 +263,6 @@ while($actrow = $actstatement->fetch())
             <div class = "navbox1">
                 <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                 <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>&nbsp;&nbsp;|&nbsp;&nbsp;
             </div>
             <div class = "navbox2">
                 <?php if(isset($_SESSION['username'])): ?>
@@ -310,7 +308,7 @@ while($actrow = $actstatement->fetch())
     <section id = "photos">
         <div class = "uploadform">
             <form method="post" enctype="multipart/form-data">
-                <label for="image"><h3>Upload New Image</h3></label><br>
+                <h3><label for="image">Upload New Image</label></h3><br>
                 <input type="file" name="image" id="image">
                 <input type="submit" name="submit" value="Upload Image">
             </form><br>
@@ -329,7 +327,7 @@ while($actrow = $actstatement->fetch())
                 <h3>Delete Images</h3><br>
                 <form method="post">   
                     <?php foreach ($resized_images as $resized_image): ?>
-                        <input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>">
+                        <input type="checkbox" value="<?php echo $resized_image; ?>" name="checkbox[]"><img src = "<?= $resized_image ?>" alt="circus_image">
                     <?php endforeach ?>
                     <br><br>
                     <input type="submit" id="img_delete" value="Delete Image(s)" name="img_delete" onclick="return confirmDeleteImg()">

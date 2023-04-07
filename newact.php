@@ -78,7 +78,7 @@ if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !emp
         
         $act_statement->execute();
 
-        header('Location: ./index.php');
+        header("Location: profile.php?performer_id={$performer_id}");
         exit;
 }
 }
@@ -123,15 +123,9 @@ function filter_performer_id()
         <label for="category">Category:</label>
         <select id="category" name="category">
             <option value="Circus">Circus</option>
-            <option value="Dance">Dance</option>
-            <option value="Music">Music</option>
-            <option value="Magic">Magic</option>
-            <option value="Comedy">Comedy</option>
-            <option value="Variety">Variety</option>
         </select><br><br>
-        <label for="apparatus" name="apparatus">Apparatus</label>
+        <label for="apparatus">Apparatus</label>
         <select id="apparatus" name="apparatus">
-            <option value="None">None</option>
             <option value="Silks">Silks</option>
             <option value="Handbalance/Hand-to-Hand">Handbalance/Hand-to-Hand</option>
             <option value="Aerial Hoop">Aerial Hoop</option>
@@ -143,7 +137,8 @@ function filter_performer_id()
         </select><br><br>
         <label for="description">Act Description:</label>
         <textarea id="description" name="description" rows="10" cols="50"></textarea><br><br>
-        <input type="submit" value="Submit">     
+        <input type="submit" value="Submit"><br>
+        </form>
     <footer>
         <br>
         <p>Winnipeg Performing Arts Collective</p>

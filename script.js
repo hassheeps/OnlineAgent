@@ -33,6 +33,16 @@ function confirmDeleteImg()
     }
 }
 
+function confirmDeleteAct()
+{
+	return confirm("Are you sure you want to delete the selected act?  This cannot be undone.");
+
+	if (!confirm)
+	{
+		return false;
+    }
+}
+
 function confirmUpdate()
 {
 	return confirm("Submit changes?");

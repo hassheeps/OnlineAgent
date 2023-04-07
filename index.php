@@ -78,16 +78,16 @@ else
                         <a href="./newprofile.php" class="nav">Create Performer Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                     <?php endif ?>
                     <?php if(isset($_SESSION['username']) && $profile_exists): ?>
-                        <a href="./profile.php?performer_id=<?= $performer_id ?>">View My Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a href="./profile.php?performer_id=<?= $performer_id ?>">View My Profile</a>&nbsp;&nbsp;
                     <?php endif ?>
                     <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2 ): ?>
-                        <a href = "./admin.php" class="nav">Manage Users</a>
+                        |&nbsp;&nbsp;<a href = "./admin.php" class="nav">Manage Users</a>
                     <?php endif ?>
                 </div>
                 <div class = "navbox2">
                     <?php if(!isset($_SESSION['username'])): ?>
                         <a href="./login.php" class="nav">Log In</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                        <a href="./user_registration.php" class="nav">Register</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a href="./user_registration.php" class="nav">Register</a>
                     <?php endif ?>
                     <?php if(isset($_SESSION['username'])): ?>
                         Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;

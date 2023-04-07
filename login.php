@@ -79,7 +79,7 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
 ?>
 
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -110,5 +110,6 @@ if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
         <?php endif ?>
         <br><br>
         <input type="submit" value="Submit">
-        </body>
+    </form>
+</body>
 </html>

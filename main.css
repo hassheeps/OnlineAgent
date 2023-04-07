@@ -29,7 +29,9 @@ body {
 	text-align: right;
 }
 
-
+.table{
+	display:flex;
+}
 #header {
 	height: 100px;
 	margin: 10px;
@@ -222,44 +224,24 @@ h3 {
 	color: red;
 }
 
-.table{
+.table {
+	margin: auto;
 	border-style: solid;
 	border-width: 1px;
-
+	width: 50%;
 }
 
-thead{
-	border-style: solid;
-	border-width: 1px;
-}
-
-th {
+thead th{
+	background: lightgrey;
 	width: 100px;
-	border-width: 1px;
-	border-bottom-style: solid;
-	border-right-style: solid;
 }
 
-#edit{
-	border-style: none;
+td{
+	margin-left: 1px;
+}
+
+#center {
 	text-align: center;
-}
-
-#edit tr{
-	align-content: center;
-}
-
-#userid{
-	width: 50px;
-	align-content: center;
-	text-align: center;
-
-}
-
-#userid tr{
-	align-content: center;
-	border-style: solid;
-	border-width: 1px;
 }
 
 img{
@@ -267,4 +249,3 @@ img{
 	border-style: solid;
 	border-color: darkblue;
 }
-

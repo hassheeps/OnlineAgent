@@ -94,7 +94,7 @@ if(!$password_error_flag && !$empty_flag && !$password_error_flag)
 ?>
 
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

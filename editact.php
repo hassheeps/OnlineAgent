@@ -14,78 +14,89 @@ session_start();
 $performer_id = $_SESSION['performer_id'];
 $act_id = $_GET['act_id'];
 
-if($performer_id!= null)
+//Get performer id for stage name
+
+$query = "SELECT * FROM performers WHERE performer_id = :performer_id";
+
+$statement = $db->prepare($query);
+$statement->bindValue(':performer_id', $performer_id);
+$statement->execute();
+
+$performer = $statement->fetch();
+
+//Get act id record
+
+$query = "SELECT * FROM Acts WHERE act_id = :act_id";
+
+$statement = $db->prepare($query);
+$statement->bindValue(':act_id', $act_id);
+$statement->execute();
+
+$act = $statement->fetch();
+
+// Checks if the "delete" button was what caused the form to submit.
+
+if(isset($_POST['act_delete']))
 {
-    $query = "SELECT * FROM performers WHERE performer_id = :performer_id";
-
-    $statement = $db->prepare($query);
-    $statement->bindValue(':performer_id', $performer_id);
-    $statement->execute();
-
-    $performer = $statement->fetch();
-}
-
-
-if($act_id != null)
-{
-    $query = "SELECT * FROM Acts WHERE act_id = :act_id";
+    $query = "DELETE FROM acts WHERE act_id = :act_id";
 
     $statement = $db->prepare($query);
     $statement->bindValue(':act_id', $act_id);
     $statement->execute();
 
-    $act = $statement->fetch();
+    header("Location: profile.php?performer_id={$performer_id}");
+    exit;
 }
-
-// Verifies that a post has occurred and a value exists.  The value is then sanitized to be used as a variable.
-
-if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !empty($_POST['category']) && !empty($_POST['apparatus']))
+else
 {
-    $act_name = filter_input(INPUT_POST, 'act_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $apparatus = filter_input(INPUT_POST, 'apparatus', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-    // Verifies that the length of both the content and the title variables is 1 or greater.
-
-    if(strlen($act_name) > 0 && strlen($description) > 0)
+    if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !empty($_POST['category']) && !empty($_POST['apparatus']))
     {
-        // Get category id number for chosen category
+        $act_name = filter_input(INPUT_POST, 'act_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $apparatus = filter_input(INPUT_POST, 'apparatus', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $category_query = "SELECT * FROM Categories WHERE category_name = :category";
-        $category_statement= $db->prepare($category_query);
-        $category_statement->bindValue(':category', $category);
-        $category_statement->execute();
+        // Verifies that the length of both the content and the title variables is 1 or greater.
 
-        $category_fetch = $category_statement->fetch();
-        $category_id = $category_fetch['category_id'];
+        if(strlen($act_name) > 0 && strlen($description) > 0)
+        {
+            // Get category id number for chosen category
 
-        // Get apparatus id number for chosen apparatus
+            $category_query = "SELECT * FROM Categories WHERE category_name = :category";
+            $category_statement= $db->prepare($category_query);
+            $category_statement->bindValue(':category', $category);
+            $category_statement->execute();
 
-        $apparatus_query = "SELECT * FROM Apparatus WHERE apparatus_name = :apparatus";
-        $apparatus_statement= $db->prepare($apparatus_query);
-        $apparatus_statement->bindValue(':apparatus', $apparatus);
-        $apparatus_statement->execute();
+            $category_fetch = $category_statement->fetch();
+            $category_id = $category_fetch['category_id'];
 
-        $apparatus_fetch = $apparatus_statement->fetch();
-        $apparatus_id = $apparatus_fetch['apparatus_id'];
+            // Get apparatus id number for chosen apparatus
+
+            $apparatus_query = "SELECT * FROM Apparatus WHERE apparatus_name = :apparatus";
+            $apparatus_statement= $db->prepare($apparatus_query);
+            $apparatus_statement->bindValue(':apparatus', $apparatus);
+            $apparatus_statement->execute();
+
+            $apparatus_fetch = $apparatus_statement->fetch();
+            $apparatus_id = $apparatus_fetch['apparatus_id'];
         
-        // Adds the new post as a record in the database
+            // Adds the new post as a record in the database
 
-        $act_query = "INSERT INTO acts (act_name, description, performer_id, apparatus_id, category_id) VALUES (:act_name, :description, :performer_id, :apparatus_id, :category_id)";
+            $act_query = "UPDATE acts SET act_name = :act_name, description = :description, performer_id = :performer_id, apparatus_id = :apparatus_id, category_id = :category_id WHERE act_id = :act_id";
 
-        $act_statement= $db->prepare($act_query);
-        $act_statement->bindValue(':act_name', $act_name);
-        $act_statement->bindValue(':description', $description);
-        $act_statement->bindValue(':performer_id', $performer_id);
-        $act_statement->bindValue(':apparatus_id', $apparatus_id);
-        $act_statement->bindValue(':category_id', $category_id);
+            $act_statement= $db->prepare($act_query);
+            $act_statement->bindValue(':act_name', $act_name);
+            $act_statement->bindValue(':description', $description);
+            $act_statement->bindValue(':performer_id', $performer_id);
+            $act_statement->bindValue(':apparatus_id', $apparatus_id);
+            $act_statement->bindValue(':category_id', $category_id);
         
-        $act_statement->execute();
+            $act_statement->execute();
 
-        header('Location: ./index.php');
-        exit;
-}
+            header("Location: profile.php?performer_id={$performer_id}");
+            exit;
+        }
+    }
 }
 function filter_performer_id()
 {
@@ -101,6 +112,7 @@ function filter_performer_id()
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="script.js"></script>
     <title>Create Act</title>
 </head>
 <body>
@@ -123,21 +135,15 @@ function filter_performer_id()
         <div class = "infobox">
             <h3>Stage Name: <?= $performer['stage_name'] ?></h3>
             <br>
-            <form method="post" action="newact.php?performer_id=<?= $performer_id ?>">
+            <form method="post">
                 <label for="act_name">Act Name:</label>
                 <input id="act_name" name="act_name" value="<?= $act['act_name'] ?>"><br><br>
                 <label for="category">Category:</label>
                 <select id="category" name="category">
                     <option value="Circus">Circus</option>
-                    <option value="Dance">Dance</option>
-                    <option value="Music">Music</option>
-                    <option value="Magic">Magic</option>
-                    <option value="Comedy">Comedy</option>
-                    <option value="Variety">Variety</option>
                 </select><br><br>
                 <label for="apparatus" name="apparatus">Apparatus</label>
                 <select id="apparatus" name="apparatus">
-                    <option value="None">None</option>
                     <option value="Silks">Silks</option>
                     <option value="Handbalance/Hand-to-Hand">Handbalance/Hand-to-Hand</option>
                     <option value="Aerial Hoop">Aerial Hoop</option>
@@ -149,9 +155,11 @@ function filter_performer_id()
                 </select><br><br>
                 <label for="description">Act Description:</label>
                 <textarea id="description" name="description" rows="10" cols="50"><?= $act['description'] ?></textarea><br><br>
-                <input type="submit" value="Submit">
-            </div>
-        </section>
+                <input type="submit" value="Submit">&nbsp;&nbsp;&nbsp;<input type="submit" id="act_delete" value="Delete" name="act_delete" onclick="return confirmDeleteAct()">
+            </form>
+            <br>
+        </div>
+    </section>
     <footer>
         <br>
         <p>Winnipeg Performing Arts Collective</p>

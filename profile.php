@@ -143,12 +143,17 @@ function filter_post_id()
         </div>
         <div class = "navcontainer">
             <div class = "navbox1">
-                <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="./index.php">Home</a>&nbsp;&nbsp;
                 <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
-                    <a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>
+                    |&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>
                 <?php endif ?>
             </div>
             <div class = "navbox2">
+                <?php if(!isset($_SESSION['username'])): ?>
+                    <a href="./login.php" class="nav">Log In</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="./user_registration.php" class="nav">Register</a>
+                <?php endif ?>
                 <?php if(isset($_SESSION['username'])): ?>
                     Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
                     <a href = "./logout.php">Log Out</a>
@@ -175,14 +180,12 @@ function filter_post_id()
             </div>
             <ul>
                 <li><h3>Act Information</h3></li>
-            </ul>
-            <?php while($row = $act_statement->fetch()): ?>
-                <ul>
+                <?php while($row = $act_statement->fetch()): ?>
                     <li>Act Name: <?= $row['act_name'] ?></li>
-                    <li>Act Description: <?= $row['description'] ?></li>
-                <br>
-                </ul> 
+                    <li>Act Description: <?= $row['description'] ?></li>      
+                    <br><br>              
             <?php endwhile ?>
+            </ul> 
         </div>
     </section>
     <section id = "photos">
