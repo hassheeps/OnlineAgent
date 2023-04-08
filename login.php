@@ -13,9 +13,6 @@ session_start();
 
 // Initial variables
 
-$username = "";
-$password = "";
-$user_level_id = "";
 $errorflag = false;
 
 // If the form has been submitted and neither field is empty

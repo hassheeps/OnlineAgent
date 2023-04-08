@@ -75,14 +75,17 @@ else
             <div class = "navcontainer">
                 <div class = "navbox1">
                     <?php if(!$profile_exists && isset($_SESSION['username'])): ?>
-                        <a href="./newprofile.php" class="nav">Create Performer Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a href="./newprofile.php" class="nav">Create Performer Profile</a>
                     <?php endif ?>
                     <?php if(isset($_SESSION['username']) && $profile_exists): ?>
                         <a href="./profile.php?performer_id=<?= $performer_id ?>">View My Profile</a>&nbsp;&nbsp;
                     <?php endif ?>
                     <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2 ): ?>
-                        |&nbsp;&nbsp;<a href = "./admin.php" class="nav">Manage Users</a>
+                        |&nbsp;&nbsp;<a href = "./admin.php" class="nav">Manage Users</a>&nbsp;&nbsp;|
                     <?php endif ?>
+                    <select id="search_performer">
+                        <option value="search">Search performers by act type</option>
+                    </select>
                 </div>
                 <div class = "navbox2">
                     <?php if(!isset($_SESSION['username'])): ?>

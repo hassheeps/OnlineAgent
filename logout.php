@@ -15,6 +15,7 @@ session_start();
 $_SESSION['username'] = null;
 $_SESSION['user_level_id'] = null;
 $_SESSION['user_id'] = null;
+$_SESSION['performer_id'] = null;
 
 ?>
 

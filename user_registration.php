@@ -19,15 +19,6 @@ $empty_flag = false;
 $password_error = "Passwords do not match.  Please try again.";
 $required_field_error = "All fields are required.";
 
-// Input variables
-
-$username = "";
-$password = "";
-$confirm_password = "";
-$first_name = "";
-$last_name = "";
-$email = "";
-
 // Filters and sanitizes the form input data.
 
 if($_POST && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['confirm_password']) && !empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['email']))
@@ -83,13 +74,13 @@ if(!$password_error_flag && !$empty_flag && !$password_error_flag)
     if(!isset($_SESSION['username']))
     {
         $_SESSION['username'] = $username;
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['user_level_id'] = 1;
     }
 
     header('Location: ./index.php');
     exit;
 }
-
-
 
 ?>
 

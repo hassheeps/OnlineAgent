@@ -9,7 +9,6 @@
 *******************/
 
 require('connect.php');
-
 session_start();
 
 if(isset($_GET['user_id']) && filter_performer_id())

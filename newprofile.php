@@ -9,13 +9,7 @@
 ****************/
 
 require('connect.php');
-
 session_start();
-
-$stage_name = "";
-$website = "";
-$contact_phone = "";
-$contact_email = "";
 
 // Verifies that a post has occurred and a value exists.  The value is then sanitized to be used as a variable.
 
@@ -41,6 +35,7 @@ if($_POST && !empty($_POST['stage_name']) && !empty($_POST['website']) && !empty
 
 if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0 && strlen($contact_email) > 0)
 {
+    // Adds the new post as a record in the database
 
     $query = "INSERT INTO performers (stage_name, website, contact_phone, contact_email, user_id) VALUES (:stage_name, :website, :contact_phone, :contact_email, :user_id)";
 
@@ -51,8 +46,6 @@ if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0
     $statement->bindValue(':contact_email', $contact_email);
     $statement->bindValue(':user_id', $user_id);
     $statement->execute();
-
-    // Adds the new post as a record in the database
 
     header('Location: ./index.php');
     exit;
@@ -70,14 +63,19 @@ if(strlen($stage_name) > 0 && strlen($website) > 0 && strlen($contact_phone) > 0
     <title>Create Post</title>
 </head>
 <body>
-    <h1>New Performer Profile</h1>
-    <div class = "username">
-        <?php if(isset($_SESSION['username'])): ?>
-            Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href = "./logout.php">Log Out</a>
-        <?php endif ?>
-    </div>
-    <a href="./index.php" class="nav">Home</a>
+    <h1>New Performer Profile</h1><br><br>
+        <div class = "navcontainer">
+            <div class = "navbox1">
+                <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="./profile.php?performer_id=<?= $profile['performer_id'] ?>">Return to Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            </div>
+            <div class = "navbox2">
+                <?php if(isset($_SESSION['username'])): ?>
+                    Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href = "./logout.php">Log Out</a>
+                <?php endif ?> 
+            </div>
+        </div>
     <br><br><br>
     <form method="post" action="newprofile.php">
         <label for="stage_name">Stage Name:</label>

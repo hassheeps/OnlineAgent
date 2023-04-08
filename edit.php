@@ -1,7 +1,7 @@
 <?php
 
 /**************** 
-    
+
     Name: Brianne Coleman
     Date: March 21, 2023
     Description: WebDev 2 Final Project: Edit/Delete performer profile
@@ -233,7 +233,6 @@ if(isset($_POST['img_delete']))
 $query = "SELECT * from acts WHERE performer_id = $performer_id";
 
 $actstatement = $db->prepare($query);
-//$actstatement->bindValue(':performer_id', $performer_id);
 $actstatement->execute();
 
 $acts = [];

@@ -12,7 +12,11 @@ require('connect.php');
 session_start();
 
 $performer_id = $_SESSION['performer_id'];
-$act_id = $_GET['act_id'];
+
+if(isset($_GET['act_id']))
+{ 
+    $act_id = filter_input(INPUT_GET, 'act_id', FILTER_VALIDATE_INT);
+}
 
 //Get performer id for stage name
 
@@ -49,6 +53,8 @@ if(isset($_POST['act_delete']))
 }
 else
 {
+    // If it wasn't delete, it was submitted as an update 
+
     if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !empty($_POST['category']) && !empty($_POST['apparatus']))
     {
         $act_name = filter_input(INPUT_POST, 'act_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);

@@ -11,15 +11,10 @@
 require('connect.php');
 session_start();
 
-$act_name = "";
-$description = "";
-$category_id = "";
-$apparatus_id = "";
-$stage_name = "";
-
-
-    $performer_id = $_GET['performer_id'];
-
+if(isset($_GET['performer_id'])))
+{
+   $performer_id = filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
+}
 
 if($performer_id != null)
 {
@@ -80,11 +75,7 @@ if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !emp
 
         header("Location: profile.php?performer_id={$performer_id}");
         exit;
-}
-}
-function filter_performer_id()
-{
-    return filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
+    }
 }
 
 ?>

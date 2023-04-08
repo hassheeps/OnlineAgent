@@ -16,8 +16,6 @@ if(isset($_SESSION['user_id']))
     $user_id = $_SESSION['user_id'];
 }
 
-$resized_images = [];
-
 // Checks if the post id has been set, retrieves it from the url
 
 if(isset($_GET['performer_id']) && filter_post_id())
@@ -76,6 +74,8 @@ while($row = $image_statement->fetch())
 }
 
 // Resizing the images for display
+
+$resized_images = [];
 
 for($i=0; $i < count($images); $i++)
 {

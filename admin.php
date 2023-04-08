@@ -9,17 +9,15 @@
 ****************/
 
 require('connect.php');
-
 session_start();
 
-// Checks whether a user is logged in, and they have administrative permissions
+// Checks whether a user is logged in, and if they have administrative permissions
 
 if(isset($_SESSION['username']) && $_SESSION['user_level_id'] == 2)
 {
     //Display all Users
 
     $query = "SELECT * FROM Users ORDER BY user_id";
-
     $statement = $db-> prepare($query);
     $statement-> execute();
 }
