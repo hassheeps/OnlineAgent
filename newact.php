@@ -11,7 +11,7 @@
 require('connect.php');
 session_start();
 
-if(isset($_GET['performer_id'])))
+if(isset($_GET['performer_id']))
 {
    $performer_id = filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
 }
