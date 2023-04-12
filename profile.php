@@ -125,19 +125,22 @@ if($_POST && isset($_POST['title']) && isset($_POST['body']))
     $body = filter_input(INPUT_POST, 'body', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $performer_id = $_GET['performer_id'];
     $user_id = $_SESSION['user_id'];
+    $author = $_SESSION['username'];
 
     if($user_id == NULL)
     {
         $user_id = "";
+        $author = $_POST['author'];
     }
 
-    $query = "INSERT INTO comments (title, body, performer_id, user_id) VALUES (:title, :body, :performer_id, :user_id)";
+    $query = "INSERT INTO comments (title, body, performer_id, user_id, author) VALUES (:title, :body, :performer_id, :user_id, :author)";
 
     $commentstatement = $db->prepare($query);
     $commentstatement->bindValue(':title', $title);
     $commentstatement->bindValue(':body', $body);
     $commentstatement->bindValue(':performer_id', $performer_id);
     $commentstatement->bindValue(':user_id', $user_id);
+    $commentstatement->bindValue(':author', $author);
     $commentstatement->execute();
 
     header("Location: ./profile.php?performer_id={$performer_id}");
@@ -147,15 +150,10 @@ if($_POST && isset($_POST['title']) && isset($_POST['body']))
 // Display comments
 
 
-$query = "SELECT * FROM comments JOIN users ON comments.user_id = users.user_id WHERE performer_id = $performer_id";
+$query = "SELECT * FROM comments WHERE performer_id = $performer_id ORDER BY comment_date DESC";
 
 $commentselect = $db->prepare($query);
 $commentselect->execute();
-
-
-
-
-
 
 
 // The function that validates the post id
@@ -245,10 +243,10 @@ function filter_post_id()
                 <h4><?= $comment['title'] ?></h4><br>
                 <p class = "commenttimestamp"><?= $comment['comment_date'] ?></p>
                 <p><?= $comment['body'] ?></p>
-                <p><h4>- <?= $comment['username'] ?></h4></p><br>
+                <p><h4>- <?= $comment['author'] ?></h4></p><br>
             <?php endwhile ?> 
         </div>
-        <div class = "comment_form">
+        <div class = "comment_form"><br>
             <h3>Leave a Comment</h3>
             <br>
             <form method = "post">
@@ -256,7 +254,11 @@ function filter_post_id()
                 <input id = "title" name = "title" size = "50"></input><br><br>
                 <label for="body">Comment:</label>
                 <textarea id="body" name="body" rows="10" cols="50"></textarea><br><br>
-                <input type="submit" name="submitcomment" id="submitcomment" value="Submit Comment" onclick="return confirmSubmit()">
+                <?php if(!isset($_SESSION['username'])): ?>
+                    <label for = "author">Your Name:</label>
+                    <input id = "author" name = "author" size = "50"></input><br><br>
+                <?php endif ?>
+                <input type="submit" name="submitcomment" id="submitcomment" value="Submit Comment">
             </form>
         </div>
     </section>

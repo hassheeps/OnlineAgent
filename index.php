@@ -83,9 +83,6 @@ else
                     <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2 ): ?>
                         |&nbsp;&nbsp;<a href = "./admin.php" class="nav">Manage Users</a>&nbsp;&nbsp;|
                     <?php endif ?>
-                    <select id="search_performer">
-                        <option value="search">Search performers by act type</option>
-                    </select>
                 </div>
                 <div class = "navbox2">
                     <?php if(!isset($_SESSION['username'])): ?>

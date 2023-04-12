@@ -243,6 +243,30 @@ while($actrow = $actstatement->fetch())
     $acts[] = $actrow;
 }
 
+
+$query = "SELECT * FROM comments WHERE performer_id = $performer_id ORDER BY comment_date DESC";
+
+$commentselect = $db->prepare($query);
+$commentselect->execute();
+
+if(isset($_POST['delete_comment']))
+{
+    if(isset($_POST['comment_checkbox']))
+    {
+        foreach($_POST['comment_checkbox'] as $comment_id)
+        {
+            $query = "DELETE FROM comments WHERE comment_id = :comment_id";
+
+            $deletecomment = $db->prepare($query);
+            $deletecomment->bindValue(':comment_id', $comment_id);
+            $deletecomment->execute();
+        }
+    }
+
+    header("Location: edit.php?performer_id={$performer_id}");
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -335,12 +359,29 @@ while($actrow = $actstatement->fetch())
             <?php endif ?>
             <br>
         </div>
-        <div class = "editacts">
+        <div class = "editacts"><br>
             <h3>Edit Acts</h3><br>
                 <?php foreach ($acts as $act): ?>
                     <a href="./editact.php?act_id=<?= $act['act_id'] ?>"><?= $act['act_name'] ?></a><br>
-                <?php endforeach ?>
+                <?php endforeach ?><br>
         </div>
+        <?php if($_SESSION['user_level_id'] == 2): ?>
+        <div class = "comment_display"><br>
+            <h3>Edit Comments</h3><br><br>
+            <form method = "post">
+            <?php while ($comment = $commentselect->fetch()): ?>
+                <div class = "comment_card">
+                    <input type="hidden" name="comment_id" value="<?= $comment['comment_id'] ?>">
+                     <p><b>Title:</b> <?= $comment['title'] ?></p> 
+                    <p><b>Author:</b> <?= $comment['author'] ?></p>
+                    <p><b>Date:</b> <?= $comment['comment_date'] ?></p>
+                    <input type="checkbox" value="<?= $comment['comment_id'] ?>" name="comment_checkbox[]">Delete Comment<br><br>
+                </div>
+            <?php endwhile ?><br>
+            <input type="submit" id="delete_comment" value="Delete Comment(s)" name = "delete_comment" onclick="return confirmDeleteComment()"><br><br>
+            </form>
+        </div>
+        <?php endif ?>
     </section>
     <footer>
         <br>
