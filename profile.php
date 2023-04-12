@@ -126,6 +126,11 @@ if($_POST && isset($_POST['title']) && isset($_POST['body']))
     $performer_id = $_GET['performer_id'];
     $user_id = $_SESSION['user_id'];
 
+    if($user_id == NULL)
+    {
+        $user_id = "";
+    }
+
     $query = "INSERT INTO comments (title, body, performer_id, user_id) VALUES (:title, :body, :performer_id, :user_id)";
 
     $commentstatement = $db->prepare($query);
@@ -141,10 +146,17 @@ if($_POST && isset($_POST['title']) && isset($_POST['body']))
 
 // Display comments
 
-$query = "SELECT * FROM comments WHERE performer_id = $performer_id";
+
+$query = "SELECT * FROM comments JOIN users ON comments.user_id = users.user_id WHERE performer_id = $performer_id";
 
 $commentselect = $db->prepare($query);
 $commentselect->execute();
+
+
+
+
+
+
 
 // The function that validates the post id
 
@@ -230,8 +242,10 @@ function filter_post_id()
             <h3>Comments</h3>
             <br>
             <?php while ($comment = $commentselect->fetch()): ?>
-            <li>Title: <?= $comment['title'] ?><br><br>
-            <li>Comment: <?= $comment['body'] ?><br><br>
+                <h4><?= $comment['title'] ?></h4><br>
+                <p class = "commenttimestamp"><?= $comment['comment_date'] ?></p>
+                <p><?= $comment['body'] ?></p>
+                <p><h4>- <?= $comment['username'] ?></h4></p><br>
             <?php endwhile ?> 
         </div>
         <div class = "comment_form">

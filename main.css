@@ -32,6 +32,7 @@ body {
 .table{
 	display:flex;
 }
+
 #header {
 	height: 100px;
 	margin: 10px;
@@ -137,7 +138,12 @@ footer{
 	margin-bottom: 15px;
 	font-size: 12px;
 	text-align: center;
+}
 
+.commenttimestamp {
+	list-style: none;
+	font-size: 12px;
+	margin-top: -35px;
 }
 
 textarea {
@@ -209,6 +215,11 @@ h3 {
 	padding: 0px;
 	margin: 0px;
 	font-weight: normal;
+}
+
+h4{
+	font-size: 15px;
+	font-family: 'Century Gothic';
 }
 
 .error{
