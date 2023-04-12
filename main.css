@@ -32,7 +32,6 @@ body {
 .table{
 	display:flex;
 }
-
 #header {
 	height: 100px;
 	margin: 10px;
@@ -49,7 +48,8 @@ body {
 }
 
 .infobox {
-	width:85%;	
+	width:85%;
+	
 }
 
 #photos{
@@ -142,6 +142,7 @@ footer{
 
 textarea {
 	font-family: 'Century Gothic', sans-serif;
+	resize: none;
 }
 
 input {

@@ -4,7 +4,7 @@
 
     Name: Brianne Coleman
     Date: March 21, 2023
-    Description: WebDev 2 Final Project: Edit/Delete performer profile
+    Description: WebDev 2 Final Project: Edit/Delete performer profile, Upload Images
 
 ****************/
 
@@ -12,7 +12,12 @@ require('connect.php');
 session_start();
 
 $user_id = $_SESSION['user_id'];
-$performer_id = $_SESSION['performer_id'];
+
+if(isset($_GET['performer_id']))
+{
+    $performer_id = filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
+}
+ 
 
 /**********************************
     Performer Information Form 
@@ -64,7 +69,7 @@ else
             $statement->bindValue(':bio', $bio);
             $statement->execute();
 
-            header('Location: ./edit.php?performer_id={$performer_id}');
+            header("Location: ./edit.php?performer_id={$performer_id}");
             exit;
         }
         else
@@ -76,21 +81,16 @@ else
     {
         // If there was no post action, no changes have been made to the blog post yet.  Display the post as is.
 
-        $query = "SELECT * FROM Performers WHERE performer_id = $performer_id";
+        $query = "SELECT * FROM Performers WHERE performer_id = :performer_id";
 
         $statement = $db->prepare($query);
+        $statement->bindValue(':performer_id', $performer_id);
         $statement->execute();
 
         $profile = $statement->fetch();
     }
 }
 
-// The function that verifies the post_id
-
-function filter_performer_id()
-{
-    return filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
-}
 
 /**********************************
     Upload Image Form 
@@ -230,9 +230,10 @@ if(isset($_POST['img_delete']))
     exit;
 }
 
-$query = "SELECT * from acts WHERE performer_id = $performer_id";
+$query = "SELECT * from acts WHERE performer_id = :performer_id";
 
 $actstatement = $db->prepare($query);
+$actstatement->bindValue(':performer_id', $performer_id);
 $actstatement->execute();
 
 $acts = [];
