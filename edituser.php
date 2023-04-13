@@ -100,6 +100,21 @@ function filter_performer_id()
     <title>Edit User</title>
 </head>
 <body>
+    <section id = "header">
+        <h1>Edit Users</h1>
+        <br><br>
+        <div class = "navcontainer">
+            <div class = "navbox1">
+                <a href="./index.php">Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            </div>
+            <div class = "navbox2">
+                <?php if(isset($_SESSION['username'])): ?>
+                    Logged in as <?= $_SESSION['username'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href = "./logout.php">Log Out</a>
+                <?php endif ?> 
+            </div>
+        </div>
+    </section>
 	<form method="post">
 		<label for="user_id">User ID:</label>
 	    <input id="user_id" name="user_id" size="50" value="<?= $user['user_id'] ?>">

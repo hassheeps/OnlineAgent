@@ -119,32 +119,71 @@ $act_statement->execute();
 
 // Comment form
 
+$captcha_error_flag = false;
+
+if(isset($_SESSION['captcha']))
+{
+    $captcha_code = $_SESSION['captcha'];
+}
+
+
+if($captcha_error_flag)
+{
+    $test = 1;
+}
+else 
+{
+	$test = 0;
+}
+
+$captcha_error = "CAPTCHA Error, please try again.";
+$captcha_input = "";
+$title = "";
+$body = "";
+$author = "";
+
+if($_POST && isset($_POST['captcha']))
+{
+    $captcha_input = filter_input(INPUT_POST, 'captcha', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+}
+
+if($_POST && isset($_POST['captcha']) && !isset($_SESSION['username']))
+{
+    if($captcha_input != $captcha_code)
+    {
+        $captcha_error_flag = true;
+    }
+}
+
 if($_POST && isset($_POST['title']) && isset($_POST['body']))
 {
     $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $body = filter_input(INPUT_POST, 'body', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $performer_id = $_GET['performer_id'];
-    $user_id = $_SESSION['user_id'];
-    $author = $_SESSION['username'];
+    $user_id = "";
+    $author = $_POST['author'];
 
-    if($user_id == NULL)
+    if(isset($_SESSION['user_id']) && isset($_SESSION['username']))
     {
-        $user_id = "";
-        $author = $_POST['author'];
+        $user_id = $_SESSION['user_id'];
+        $author = $_SESSION['username'];
     }
 
-    $query = "INSERT INTO comments (title, body, performer_id, user_id, author) VALUES (:title, :body, :performer_id, :user_id, :author)";
+    if($captcha_error_flag == false)
+    {
+        $query = "INSERT INTO comments (title, body, performer_id, user_id, author) VALUES (:title, :body, :performer_id, :user_id, :author)";
 
-    $commentstatement = $db->prepare($query);
-    $commentstatement->bindValue(':title', $title);
-    $commentstatement->bindValue(':body', $body);
-    $commentstatement->bindValue(':performer_id', $performer_id);
-    $commentstatement->bindValue(':user_id', $user_id);
-    $commentstatement->bindValue(':author', $author);
-    $commentstatement->execute();
+        $commentstatement = $db->prepare($query);
+        $commentstatement->bindValue(':title', $title);
+        $commentstatement->bindValue(':body', $body);
+        $commentstatement->bindValue(':performer_id', $performer_id);
+        $commentstatement->bindValue(':user_id', $user_id);
+        $commentstatement->bindValue(':author', $author);
+        $commentstatement->execute();
 
-    header("Location: ./profile.php?performer_id={$performer_id}");
-    exit;
+        header("Location: ./profile.php?performer_id={$performer_id}");
+        exit;
+    }
 }
 
 // Display comments
@@ -163,8 +202,31 @@ function filter_post_id()
     return filter_input(INPUT_GET, 'performer_id', FILTER_VALIDATE_INT);
 }
 
-?>
+// CAPTCHA
 
+$usable_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function generate_string($input, $strength = 10)
+{
+    $input_length = strlen($input);
+    $random_string = '';
+    
+    for($i = 0; $i < $strength; $i++)
+    {
+        $random_character = $input[mt_rand(0, $input_length - 1)];
+        $random_string .= $random_character;
+    }
+
+    return $random_string;
+}
+
+$string_length = 6;
+$captcha_string = generate_string($usable_characters, $string_length); 
+
+$_SESSION['captcha'] = $captcha_string;
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -186,6 +248,9 @@ function filter_post_id()
                 <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
                     |&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                     <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>
+                <?php endif ?>
+                <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
+                    |&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                 <?php endif ?>
             </div>
             <div class = "navbox2">
@@ -251,14 +316,21 @@ function filter_post_id()
             <br>
             <form method = "post">
                 <label for = "title">Title:</label>
-                <input id = "title" name = "title" size = "50"></input><br><br>
+                <input id = "title" name = "title" size = "50" value="<?= $title ?>"></input><br><br>
                 <label for="body">Comment:</label>
-                <textarea id="body" name="body" rows="10" cols="50"></textarea><br><br>
+                <textarea id="body" name="body" rows="10" cols="50"><?= $body ?></textarea><br><br>
                 <?php if(!isset($_SESSION['username'])): ?>
                     <label for = "author">Your Name:</label>
-                    <input id = "author" name = "author" size = "50"></input><br><br>
+                    <input id = "author" name = "author" size = "50" value="<?= $author ?>"></input><br><br>
+                    <label for="captcha">Please Enter the Captcha Text</label>
+                    <div class = "captcha"><?= $_SESSION['captcha'] ?><br>
+                        <input type="text" id="captcha" name="captcha"><br>
+                    </div>
+                    <?php if($captcha_error_flag): ?>
+                        <p class = "error"><?= $captcha_error ?></p>
+                    <?php endif ?>
                 <?php endif ?>
-                <input type="submit" name="submitcomment" id="submitcomment" value="Submit Comment">
+                <input type="submit" id="comment" name="comment" value="Submit Comment"><br>
             </form>
         </div>
     </section>

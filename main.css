@@ -274,3 +274,9 @@ img{
 	border-style: solid;
 	border-color: darkblue;
 }
+
+.captcha{
+	font-size: 22px;
+	color: rebeccapurple;
+	font-weight: bold;
+}

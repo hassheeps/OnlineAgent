@@ -68,6 +68,16 @@ function hideErrors()
 	}
 }
 
+function refreshCaptcha() {
+
+	var img = document.images['captcha'];
+
+	img.src = img.src.substring(
+
+		0, img.src.lastIndexOf("?")
+
+	) + "?rand=" + Math.random() * 1000;
+}
 
 function load(){
 
@@ -75,3 +85,4 @@ function load(){
 }
 
 document.addEventListener("DOMContentLoaded", load);
+
