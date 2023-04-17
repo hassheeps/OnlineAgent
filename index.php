@@ -69,6 +69,14 @@ if($_POST && isset($_POST['search']))
     $searchstatement->execute();
 
     $performer_search = $searchstatement->fetch();
+
+    $apparatus_name = $stage_name;
+
+    $query = "SELECT * FROM apparatus JOIN acts ON apparatus.apparatus_id = acts.apparatus_id JOIN performers ON acts.performer_id = performers.performer_id WHERE apparatus_name = :apparatus_name";
+
+    $actsearchstatement = $db->prepare($query);
+    $actsearchstatement->bindValue(':apparatus_name', $apparatus_name);
+    $actsearchstatement->execute();
 }
 
 ?>
@@ -89,13 +97,13 @@ if($_POST && isset($_POST['search']))
                 <div class = "navbox1">
                     <form method="post">
                         <?php if(!$profile_exists && isset($_SESSION['username'])): ?>
-                            <a href="./newprofile.php" class="nav">Create Performer Profile</a>
+                            <a href="./newprofile.php" class="nav">Create Performer Profile</a>&nbsp;&nbsp|
                         <?php endif ?>
                         <?php if(isset($_SESSION['username']) && $profile_exists): ?>
                             <a href="./profile.php?performer_id=<?= $performer_id ?>">View My Profile</a>&nbsp;&nbsp|
                         <?php endif ?>
                         <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2 ): ?>
-                            |&nbsp;&nbsp;<a href = "./admin.php" class="nav">Manage Users</a>&nbsp;&nbsp;|
+                            <a href = "./admin.php" class="nav">Administrative Tasks</a>&nbsp;&nbsp;|
                         <?php endif ?>
                         <input id="search" name="search" size="20"></input>
                         <input type="submit" id="searchbutton" value="Search"></input>
@@ -125,12 +133,24 @@ if($_POST && isset($_POST['search']))
             </ul>
         <?php endwhile ?>
     <?php else: ?>
-        <ul class = "profile">
-            <li><h3><?= $performer_search['stage_name'] ?></h3></li>
-            <li><a href="./profile.php?performer_id=<?= $performer_search['performer_id'] ?>">View Profile</a></li>
-            <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
-            &nbsp;|&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $performer_search['performer_id'] ?>" class="edit">Edit Profile</a></li>
-            <?php endif ?>
+        <?php if(isset($performer_search['stage_name'])): ?>
+            <ul class = "profile">
+                <li><h3><?= $performer_search['stage_name'] ?></h3></li>
+                <li><a href="./profile.php?performer_id=<?= $performer_search['performer_id'] ?>">View Profile</a></li>
+                <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
+                    <li><a href="./edit.php?performer_id=<?= $performer_search['performer_id'] ?>" class="edit">Edit Profile</a></li>
+                <?php endif ?>
+                <li><?= $performer_search['bio'] ?></li>
+            </ul>
+        <?php endif ?>
+            <?php while($act = $actsearchstatement->fetch()): ?>
+                <ul class = "profile">
+                    <li><h3><?= $act['act_name'] ?></h3></li>
+                    <li>Performer: <?= $act['stage_name'] ?>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./profile.php?performer_id=<?= $act['performer_id'] ?>">View Profile</a></li>
+                    <li></li>
+                    <li><?= $act['description'] ?></li>
+                </ul>
+            <?php endwhile ?>
         </ul>
     <?php endif ?>
     <footer>

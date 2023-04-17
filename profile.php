@@ -245,12 +245,9 @@ $_SESSION['captcha'] = $captcha_string;
         <div class = "navcontainer">
             <div class = "navbox1">
                 <a href="./index.php">Home</a>&nbsp;&nbsp;
-                <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id']): ?>
+                <?php if(isset($_SESSION['username']) && $user['user_id'] == $profile['user_id'] || isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
                     |&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                     <a href="./newact.php?performer_id=<?= $profile['performer_id'] ?>">Add Act Information</a>
-                <?php endif ?>
-                <?php if(isset($_SESSION['user_level_id']) && $_SESSION['user_level_id'] == 2): ?>
-                    |&nbsp;&nbsp;<a href="./edit.php?performer_id=<?= $profile['performer_id'] ?>">Edit Profile</a>&nbsp;&nbsp;|&nbsp;&nbsp;
                 <?php endif ?>
             </div>
             <div class = "navbox2">

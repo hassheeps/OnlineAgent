@@ -78,6 +78,12 @@ if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !emp
     }
 }
 
+$query = "SELECT * FROM apparatus";
+
+$apparatuslist = $db->prepare($query);
+$apparatuslist->execute();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -117,18 +123,13 @@ if($_POST && !empty($_POST['act_name']) && !empty($_POST['description']) && !emp
         </select><br><br>
         <label for="apparatus">Apparatus</label>
         <select id="apparatus" name="apparatus">
-            <option value="Silks">Silks</option>
-            <option value="Handbalance/Hand-to-Hand">Handbalance/Hand-to-Hand</option>
-            <option value="Aerial Hoop">Aerial Hoop</option>
-            <option value="Lollipop">Lollipop</option>
-            <option value="Contortion">Contortion</option>
-            <option value="Juggling">Juggling</option>
-            <option value="Trapeze">Trapeze</option>
-            <option value="Cyr Wheel">Cyr Wheel</option>
+            <?php while($apparatus_option = $apparatuslist->fetch()): ?>
+                <option value="<?= $apparatus_option['apparatus_name'] ?>"><?= $apparatus_option['apparatus_name'] ?></option>
+            <?php endwhile ?>
         </select><br><br>
         <label for="description">Act Description:</label>
         <textarea id="description" name="description" rows="10" cols="50"></textarea><br><br>
-        <input type="submit" value="Submit"><br>
+        <input type="submit" value="Submit"><br><br>
         </form>
     <footer>
         <br>
